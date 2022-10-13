@@ -46,6 +46,11 @@ namespace CommandService.Repositories
             return _context.Platforms.Any(p => p.Id == Id);
         }
 
+        public bool ExternalPlatformExist(int platformId)
+        {
+            return _context.Platforms.Any(p => p.ExternalId == platformId);
+        }
+
         public bool SaveChanges()
         {
             return _context.SaveChanges()>0;

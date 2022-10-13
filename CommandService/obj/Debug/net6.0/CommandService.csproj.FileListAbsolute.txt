@@ -34,3 +34,4 @@ D:\hoanganh\luanvan\CommandService\obj\Debug\net6.0\refint\CommandService.dll
 D:\hoanganh\luanvan\CommandService\obj\Debug\net6.0\CommandService.pdb
 D:\hoanganh\luanvan\CommandService\obj\Debug\net6.0\CommandService.genruntimeconfig.cache
 D:\hoanganh\luanvan\CommandService\obj\Debug\net6.0\ref\CommandService.dll
+D:\hoanganh\luanvan\CommandService\bin\Debug\net6.0\RabbitMQ.Client.dll
