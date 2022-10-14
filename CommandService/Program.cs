@@ -3,6 +3,7 @@ using CommandService.Contracts;
 using CommandService.Data;
 using CommandService.EventProcessing;
 using CommandService.Repositories;
+using CommandService.SyncDataServices.Grpc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Regist Repository
 builder.Services.AddScoped<ICommandRepository, CommandRepository>();
-
+builder.Services.AddScoped<IPlatformDataClient, PlatformDataClient>();
 builder.Services.AddControllers();
 builder.Services.AddHostedService<MessageBusSubscriber>();
 builder.Services.AddDbContext<AppDbContext>(option => option.UseInMemoryDatabase("InMem"));
@@ -30,6 +31,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+PrepDb.PrepPoppulation(app);
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

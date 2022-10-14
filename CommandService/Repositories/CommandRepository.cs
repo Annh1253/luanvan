@@ -38,7 +38,7 @@ namespace CommandService.Repositories
 
         public IEnumerable<Command> GetCommandsOfPlatform(int PlatformId)
         {
-            return _context.Commands.Where(c => c.Id == PlatformId).ToList();
+            return _context.Commands.Where(c => c.PlatformId == PlatformId).ToList();
         }
 
         public bool PlatformExist(int Id)

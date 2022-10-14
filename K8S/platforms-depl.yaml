@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: platformservice
-        image: just4codee/learning1:platformservice-v4
+        image: just4codee/learning1:platformservice-v5
         
 ---
 apiVersion: v1
@@ -29,3 +29,6 @@ spec:
   - name: platformservice
     port: 80
     targetPort: 80
+  - name: platformgrpc
+    port: 666
+    targetPort: 666

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: commandservice
-        image: just4codee/learning1:commandservice-v1
+        image: just4codee/learning1:commandservice-v5
 ---
 apiVersion: v1
 kind: Service

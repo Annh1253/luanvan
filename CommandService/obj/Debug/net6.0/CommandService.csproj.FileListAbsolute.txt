@@ -35,3 +35,11 @@ D:\hoanganh\luanvan\CommandService\obj\Debug\net6.0\CommandService.pdb
 D:\hoanganh\luanvan\CommandService\obj\Debug\net6.0\CommandService.genruntimeconfig.cache
 D:\hoanganh\luanvan\CommandService\obj\Debug\net6.0\ref\CommandService.dll
 D:\hoanganh\luanvan\CommandService\bin\Debug\net6.0\RabbitMQ.Client.dll
+D:\hoanganh\luanvan\CommandService\bin\Debug\net6.0\Google.Protobuf.dll
+D:\hoanganh\luanvan\CommandService\bin\Debug\net6.0\Grpc.AspNetCore.Server.dll
+D:\hoanganh\luanvan\CommandService\bin\Debug\net6.0\Grpc.AspNetCore.Server.ClientFactory.dll
+D:\hoanganh\luanvan\CommandService\bin\Debug\net6.0\Grpc.Core.Api.dll
+D:\hoanganh\luanvan\CommandService\bin\Debug\net6.0\Grpc.Net.Client.dll
+D:\hoanganh\luanvan\CommandService\bin\Debug\net6.0\Grpc.Net.ClientFactory.dll
+D:\hoanganh\luanvan\CommandService\bin\Debug\net6.0\Grpc.Net.Common.dll
+D:\hoanganh\luanvan\CommandService\bin\Debug\net6.0\appsettings.Production.json

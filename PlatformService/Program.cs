@@ -11,12 +11,12 @@ using PlatformService.Data;
 using PlatformService.Repository;
 using PlatformService.SyncDataServices.Http;
 using PlatformService.AsyncDataServices;
+using PlatformService.SyncDataServices.Grpc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Register Repository
 builder.Services.AddScoped<IPlatformRepository, PlatformRepository>();
-
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -37,9 +37,15 @@ builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddGrpc();
 
 var app = builder.Build();
-
+app.MapGrpcService<GrpcPlatformService>();
+// app.MapGet("/protos/platform.proto", async context => 
+//     {
+//         await context.Response.WriteAsync(File.ReadAllText("Protos/platform.proto"));
+//     }
+// );
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
