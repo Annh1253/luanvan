@@ -22,6 +22,10 @@ namespace UserService.Profiles
 
             CreateMap<ServiceResponse<RoleDtoRequest>, ControllerResponse<RoleDtoRequest>>();
             CreateMap<ServiceResponse<List<RoleDtoRequest>>, ControllerResponse<List<RoleDtoRequest>>>();
+
+            CreateMap<UserDtoResponse, UserPublishedDto>();
+            CreateMap<UserDtoRequest, UserPublishedDto>();
+            CreateMap<User, UserPublishedDto>();
         }
     }
 }

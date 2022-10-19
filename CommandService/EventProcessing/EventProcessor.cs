@@ -15,7 +15,7 @@ namespace CommandService.EventProcessing
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IMapper _mapper;
 
-        private EventType  DetermineEvent(string notificationMessage)
+        private EventType DetermineEvent(string notificationMessage)
         {
             Console.WriteLine("---> Determine Event");
             var eventType = JsonSerializer.Deserialize<GenericEventDto>(notificationMessage);

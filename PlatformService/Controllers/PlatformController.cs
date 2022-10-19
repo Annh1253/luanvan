@@ -57,7 +57,8 @@ namespace PlatformService.Controllers
             try
             {
                 await _commandDataClient.SendPlatformToCommand(platformReadDto);
-            }catch(Exception ex)
+            }
+            catch(Exception ex)
             {
                 Console.WriteLine($"--> Could not send synchronously: {ex.Message}");
             }

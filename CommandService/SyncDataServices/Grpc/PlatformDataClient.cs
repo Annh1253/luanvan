@@ -25,7 +25,8 @@ namespace CommandService.SyncDataServices.Grpc
             var channel = GrpcChannel.ForAddress(_configuration["GrpcPlatform"]);
             var client = new GrpcPlatform.GrpcPlatformClient(channel);
             var request = new GetAllRequest();
-            try{
+            try
+            {
                 var reply = client.GetAllPlatforms(request);
                 return _mapper.Map<IEnumerable<Platform>>(reply.Platform);
             }

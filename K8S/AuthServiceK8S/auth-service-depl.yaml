@@ -1,0 +1,32 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+      - name: auth-service
+        image: just4codee/authservice        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service-clusterip-service
+spec:
+  selector:
+    app: auth-service
+  ports:
+  - name: auth-service
+    port: 3001
+    targetPort: 3001
+
+

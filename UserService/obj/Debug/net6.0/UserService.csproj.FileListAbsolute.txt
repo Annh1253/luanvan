@@ -70,3 +70,8 @@ D:\hoanganh\finalLuanVan\UserService\obj\Debug\net6.0\refint\UserService.dll
 D:\hoanganh\finalLuanVan\UserService\obj\Debug\net6.0\UserService.pdb
 D:\hoanganh\finalLuanVan\UserService\obj\Debug\net6.0\UserService.genruntimeconfig.cache
 D:\hoanganh\finalLuanVan\UserService\obj\Debug\net6.0\ref\UserService.dll
+D:\hoanganh\finalLuanVan\UserService\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\hoanganh\finalLuanVan\UserService\bin\Debug\net6.0\Microsoft.Extensions.DependencyModel.dll
+D:\hoanganh\finalLuanVan\UserService\bin\Debug\net6.0\Scrutor.dll
+D:\hoanganh\finalLuanVan\UserService\bin\Debug\net6.0\Swashbuckle.AspNetCore.Filters.dll
+D:\hoanganh\finalLuanVan\UserService\bin\Debug\net6.0\Swashbuckle.AspNetCore.Filters.Abstractions.dll

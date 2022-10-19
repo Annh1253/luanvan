@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-auth-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-auth-service
+  template:
+    metadata:
+      labels:
+        app: node-auth-service
+    spec:
+      containers:
+      - name: node-auth-service
+        image: just4codee/learning1:nodejs-auth-v1
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-auth-clusterip-service
+spec:
+  selector:
+    app: node-auth-service
+  ports:
+  - name: node-auth-service
+    port: 3001
+    targetPort: 3001
+
+
