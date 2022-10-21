@@ -25,7 +25,8 @@ namespace UserService.Profiles
 
             CreateMap<UserDtoResponse, UserPublishedDto>();
             CreateMap<UserDtoRequest, UserPublishedDto>();
-            CreateMap<User, UserPublishedDto>();
+            CreateMap<User, UserPublishedDto>()
+                .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.Id));;
         }
     }
 }

@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 async function connect(){
-    await mongoose.connect(process.env.MONGO_URL_KUBERNETE,{
+    await mongoose.connect(process.env.MONGO_URL_K8S,{
         useNewUrlParser:true,
         useUnifiedTopology:true,
     }).then(()=>{

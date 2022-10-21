@@ -10,6 +10,7 @@ using UserService.Data;
 using UserService.Repositories;
 using UserService.Services;
 using Swashbuckle.AspNetCore.Filters;
+using UserService.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,9 @@ builder.Services.AddScoped<IUserService, UsersService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+//Add helpers to container
+builder.Services.AddSingleton<IMessagePublisher, MessagePublisher>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

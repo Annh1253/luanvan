@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,8 @@ using UserService.Contracts.RepositoryContracts;
 using UserService.Dtos;
 using UserService.Models;
 using UserService.Response;
+using UserService.Ultils;
+using UserService.Helpers;
 
 namespace UserService.Services
 {
@@ -18,20 +21,27 @@ namespace UserService.Services
        private readonly IUserRepository _userRepository;
         private readonly IMapper _modelMapper;
         private readonly ILogger<UsersService> _logger;
-        private readonly IMessageBusClient _messageBusClient;
+        private readonly IMessagePublisher _messagePublisher;
         private readonly IRoleRepository _roleRepository;
 
-        public UsersService(IUserRepository _userRepository, IRoleRepository _roleRepository, IMapper mapper, ILogger<UsersService> logger, IMessageBusClient _messageBusClient)
+        public UsersService(IUserRepository _userRepository, IRoleRepository _roleRepository, IMapper mapper, ILogger<UsersService> logger, IMessagePublisher messagePublisher)
         {
             this._roleRepository = _roleRepository;
             this._userRepository = _userRepository;
             this._modelMapper = mapper;
             this._logger = logger;
-            this._messageBusClient = _messageBusClient;
+            this._messagePublisher = messagePublisher;
+          
         }
         public ServiceResponse<UserDtoResponse> AddUser(int RoleId, UserDtoRequest user)
         {
             User userEntity = _modelMapper.Map<User>(user);
+            if(!_roleRepository.Exist(RoleId)) return new ServiceResponse<UserDtoResponse>(){
+                Success = false,
+                StatusCode = HttpStatusCode.NotFound,
+                Message = "Role not found"
+            };
+          
             Role role = _roleRepository.GetById(RoleId);
             userEntity.Roles.Add(role);
             bool SavedSucceeded = _userRepository.AddUser(userEntity);   
@@ -48,12 +58,12 @@ namespace UserService.Services
             serviceResponse.Data = userReadDto;
           
             //Publish user to message bus
-            var userPublishedDto = _modelMapper.Map<UserPublishedDto>(userEntity);
-            userPublishedDto.Event = "NewUserCreate";
-            _messageBusClient.PublishNewPlatform(userPublishedDto);
-           
+            _messagePublisher.PublishUser(userEntity, EventType.NewUserCreate);
+              
             return serviceResponse;
         }
+
+        
 
         public bool Exist(int id)
         {
@@ -97,9 +107,77 @@ namespace UserService.Services
             return serviceResponse;
         }
 
-        public ServiceResponse<UserDtoResponse> UpdateUser(UserDtoRequest user)
+        public ServiceResponse<UserDtoResponse> UpdateUser(int UserId, UserDtoRequest userDtoRequest)
         {
-            throw new NotImplementedException();
+            User userEntity = _userRepository.GetById(UserId);
+            if(userEntity == null) return new ServiceResponse<UserDtoResponse>(){
+                Data = null,
+                Success = false,
+                Message = "User not found",
+                StatusCode = HttpStatusCode.NotFound
+            };
+            
+            bool userCredentialChange = UserCredentialChange(userDtoRequest, userEntity);
+            CRUDHelper.CopyNoneNull(userDtoRequest, userEntity);
+            bool SavedSucceeded =  _userRepository.UpdateUser(userEntity);
+           
+            // if guard
+            if (!SavedSucceeded) return new ServiceResponse<UserDtoResponse>(){
+                Success = false,
+                StatusCode = HttpStatusCode.InternalServerError,
+                Message = "Some thing went wrong when saving"
+            };
+
+            UserDtoResponse userReadDto = _modelMapper.Map<UserDtoResponse>(userEntity);
+            var serviceResponse = new ServiceResponse<UserDtoResponse>();
+            serviceResponse.Data = userReadDto;
+          
+            //Publish user to message bus
+            if(userCredentialChange)
+                _messagePublisher.PublishUser(userEntity, EventType.UpdateUserCredential);
+            else
+                _messagePublisher.PublishUser(userEntity, EventType.UpdateUserInfo);
+
+            return serviceResponse;         
+        }
+
+        public ServiceResponse<UserDtoResponse> DeleteUser(int UserId)
+        {
+            User userEntity = _userRepository.GetById(UserId);
+            if(userEntity == null) return new ServiceResponse<UserDtoResponse>(){
+                Data = null,
+                Success = false,
+                Message = "User not found",
+                StatusCode = HttpStatusCode.NotFound
+            };
+
+            UserPublishedDto userPublishedDto = _modelMapper.Map<UserPublishedDto>(userEntity);
+            
+            bool SavedSucceeded =  _userRepository.DeleteUser(userEntity);
+           
+            if (!SavedSucceeded) return new ServiceResponse<UserDtoResponse>(){
+                Success = false,
+                StatusCode = HttpStatusCode.InternalServerError,
+                Message = "Some thing went wrong when saving"
+            };
+
+            _messagePublisher.PublishUserDto(userPublishedDto, EventType.DeleteUser);
+
+            return new ServiceResponse<UserDtoResponse>(){
+                Message = "Delete successfully"
+            };
+            
+        }
+
+        private bool UserCredentialChange(UserDtoRequest userDtoRequest, User user)
+        {
+            if(userDtoRequest.Email == null || userDtoRequest.Password == null || 
+              (userDtoRequest.Email == user.Email && userDtoRequest.Password == user.Password)) 
+            {
+                return false;
+            } 
+                
+            return true;
         }
     }
 }

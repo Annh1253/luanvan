@@ -38,7 +38,7 @@ namespace UserService.Controllers
             return StatusCode((int)serviceResponse.StatusCode, controllerReponse);
         }
 
-        [HttpPost("{RoleId}")]
+        [HttpPost("/role/{RoleId}")]
         public IActionResult AddUser(int RoleId, UserDtoRequest userCreateDto)
         {
             ServiceResponse<UserDtoResponse> serviceResponse = _userService.AddUser(RoleId, userCreateDto);
@@ -46,6 +46,21 @@ namespace UserService.Controllers
             return StatusCode((int)serviceResponse.StatusCode, controllerReponse);
         }
 
+        [HttpPatch("{UserId}")]
+        public IActionResult UpdateUser(int UserId, UserDtoRequest userDtoRequest)
+        {
+            ServiceResponse<UserDtoResponse> serviceResponse = _userService.UpdateUser(UserId, userDtoRequest);
+            ControllerResponse<UserDtoResponse> controllerReponse = _mapper.Map<ControllerResponse<UserDtoResponse>>(serviceResponse);
+            return StatusCode((int)serviceResponse.StatusCode, controllerReponse);
+        }
+
+        [HttpDelete("UserId")]
+        public IActionResult DeleteUser(int UserId)
+        {
+            ServiceResponse<UserDtoResponse> serviceResponse = _userService.DeleteUser(UserId);
+            ControllerResponse<UserDtoResponse> controllerReponse = _mapper.Map<ControllerResponse<UserDtoResponse>>(serviceResponse);
+            return StatusCode((int)serviceResponse.StatusCode, controllerReponse);
+        }
 
 
     }

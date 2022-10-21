@@ -10,7 +10,9 @@ namespace UserService.Contracts.InterfaceContracts
  
         ServiceResponse<UserDtoResponse> AddUser(int RoleId, UserDtoRequest user);
 
-        ServiceResponse<UserDtoResponse> UpdateUser(UserDtoRequest user);
+        ServiceResponse<UserDtoResponse> UpdateUser(int UserId, UserDtoRequest user);
+        ServiceResponse<UserDtoResponse> DeleteUser(int UserId);
+
         bool Exist(int id);
 
         bool Exist(string email);

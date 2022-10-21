@@ -3,6 +3,7 @@ const credentailSchema = new mongoose.Schema(
     {
         email: {type: String},
         password: {type: String},
+        externalId: {type: Number},
         roles: [
             {
                 name: {type: String}

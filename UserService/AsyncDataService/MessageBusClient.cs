@@ -24,8 +24,8 @@ namespace UserService.AsyncDataServices
                                  exclusive: false,
                                  autoDelete: false,
                                  arguments: null);
-                _channel.ExchangeDeclare(exchange: "CreateNewUser", type: ExchangeType.Direct);
-                _channel.QueueBind(queue: "auth-service-queue", exchange: "CreateNewUser", routingKey: "");
+                _channel.ExchangeDeclare(exchange: "UserServiceExchange", type: ExchangeType.Direct);
+                _channel.QueueBind(queue: "auth-service-queue", exchange: "UserServiceExchange", routingKey: "");
               
                 _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
                 Console.WriteLine("---> Connected to Message Bus");
@@ -35,9 +35,9 @@ namespace UserService.AsyncDataServices
                 Console.WriteLine($"---> Could not connect to the Message Bus Client: {ex.Message}");
             }
         }
-        public void PublishNewPlatform(UserPublishedDto platformPublishedDto)
+        public void Publish(UserPublishedDto userPublishedDto)
         {
-            var message = JsonSerializer.Serialize(platformPublishedDto);
+            var message = JsonSerializer.Serialize(userPublishedDto);
             if(_connection.IsOpen)
             {
 
@@ -55,7 +55,7 @@ namespace UserService.AsyncDataServices
         private void SendMessage(string message)
         {
             var body = Encoding.UTF8.GetBytes(message);
-            _channel.BasicPublish(exchange: "CreateNewUser", routingKey: "", basicProperties: null, body: body);
+            _channel.BasicPublish(exchange: "UserServiceExchange", routingKey: "", basicProperties: null, body: body);
             Console.WriteLine($"---> We have sent message: {message}");
         }
 

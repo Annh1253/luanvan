@@ -2,29 +2,49 @@ const Credential = require("../app/models/Credential");
 const cryptoJS = require("crypto-js");
 
 class CredentialRepository {
-  async put(message) {
-    if (message.password) {
-      console.log(message.password);
-      message.password = cryptoJS.AES.encrypt(
-        message.password,
-        process.env.PASS_SECURE
-      ).toString();
-    }
-    try {
-      const updatedCredentail = await Credential.findByIdAndUpdate(
-        message.id,
-        message,
-        { new: true }
-      );
-      return updatedCredentail;
-    } catch (err) {
-      throw err;
-    }
+  async updateCredential(message) {
+      if (message.Password) {
+        console.log("updating..");
+        message.Password = cryptoJS.AES.encrypt(
+          message.Password,
+          process.env.PASS_SECURE
+        ).toString();
+      }
+      let filter = {
+        externalId : message.ExternalId
+      }
+      try {
+        let roleList = [];
+        message.Roles.forEach(role => {
+            roleList.push({
+                name: role.Name
+            })
+        });
+  
+        let updatedCredentail = await Credential.findOne(filter);
+        updatedCredentail.email = message.Email;
+        updatedCredentail.password = message.Password;
+        updatedCredentail.roles = roleList;
+        updatedCredentail.save()
+        .then((data) => {
+          console.log("Save successfully");
+          return data;
+        })
+        .catch((err) => {
+          throw err;
+        });
+      } catch (err) {
+        throw err;
+      }
   }
 
-  async delete(message) {
+  async deleteCredential(message) {
     try {
-      const deleted = await Credential.findByIdAndDelete(message.id);
+      let filter = {
+        externalId : message.ExternalId
+      }
+      const deleted = await Credential.findOneAndDelete(filter);
+      console.log("Delete Successfully");
       return deleted;
     } catch (err) {
       throw err;
@@ -79,6 +99,7 @@ class CredentialRepository {
     const newCredential = new Credential({
       email: message.Email,
       password: encryptedPwd,
+      externalId: message.ExternalId,
       roles: roleList,
     });
     newCredential

@@ -8,6 +8,6 @@ namespace UserService.AsyncDataServices
 {
     public interface IMessageBusClient
     {
-        void PublishNewPlatform(UserPublishedDto platformPublishedDto);
+        void Publish(UserPublishedDto platformPublishedDto);
     }
 }

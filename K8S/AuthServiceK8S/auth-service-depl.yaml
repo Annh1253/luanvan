@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: auth-service
-        image: just4codee/authservice        
+        image: just4codee/authservice
 ---
 apiVersion: v1
 kind: Service
