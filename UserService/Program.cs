@@ -55,7 +55,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddDbContext<DBContext>(options => { 
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));});
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQLConnection"));});
 // if(builder.Environment.IsDevelopment())
 // {
 //     builder.Services.AddDbContext<DBContext>(option => option.UseInMemoryDatabase("InMem"));

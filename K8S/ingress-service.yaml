@@ -34,6 +34,13 @@ spec:
             port:
               number: 80
       - pathType: Prefix
+        path: "/api/Role"
+        backend:
+          service:
+            name: user-service-clusterip-service
+            port:
+              number: 80
+      - pathType: Prefix
         path: "/auth/login"
         backend:
           service:

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "XEjhD2i740K9gdjQybDYbFynMyDc9VepGHdhZNet0YZRBm5KRPYImLaXD1fqBq2qR1mC5NzXOyYcWp15w6NgaQ==",
+  "dgSpecHash": "5fmYXJLdp51nrvzv87au3i2lZe6ErAg3mixD8CnCWr6gD00p6wzTW8H/9KWo/TfhND7X9U0xF05u32TgNUyWvw==",
   "success": true,
-  "projectFilePath": "D:\\hoanganh\\luanvan\\UserService\\UserService.csproj",
+  "projectFilePath": "D:\\hoanganh\\UserService\\UserService.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.0\\automapper.extensions.microsoft.dependencyinjection.12.0.0.nupkg.sha512",
@@ -27,6 +27,7 @@
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\microsoft.entityframeworkcore.inmemory\\6.0.9\\microsoft.entityframeworkcore.inmemory.6.0.9.nupkg.sha512",
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\6.0.9\\microsoft.entityframeworkcore.relational.6.0.9.nupkg.sha512",
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\microsoft.entityframeworkcore.sqlserver\\6.0.9\\microsoft.entityframeworkcore.sqlserver.6.0.9.nupkg.sha512",
+    "C:\\Users\\nlhoanganh\\.nuget\\packages\\microsoft.entityframeworkcore.tools\\6.0.9\\microsoft.entityframeworkcore.tools.6.0.9.nupkg.sha512",
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\microsoft.extensions.apidescription.server\\3.0.0\\microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\6.0.0\\microsoft.extensions.caching.abstractions.6.0.0.nupkg.sha512",
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\microsoft.extensions.caching.memory\\6.0.1\\microsoft.extensions.caching.memory.6.0.1.nupkg.sha512",
@@ -49,6 +50,8 @@
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\microsoft.openapi\\1.3.1\\microsoft.openapi.1.3.1.nupkg.sha512",
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\microsoft.win32.registry\\4.7.0\\microsoft.win32.registry.4.7.0.nupkg.sha512",
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
+    "C:\\Users\\nlhoanganh\\.nuget\\packages\\npgsql\\6.0.7\\npgsql.6.0.7.nupkg.sha512",
+    "C:\\Users\\nlhoanganh\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\6.0.7\\npgsql.entityframeworkcore.postgresql.6.0.7.nupkg.sha512",
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\rabbitmq.client\\6.4.0\\rabbitmq.client.6.4.0.nupkg.sha512",
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\scrutor\\3.3.0\\scrutor.3.3.0.nupkg.sha512",
     "C:\\Users\\nlhoanganh\\.nuget\\packages\\swashbuckle.aspnetcore\\6.2.3\\swashbuckle.aspnetcore.6.2.3.nupkg.sha512",

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\hoanganh\\luanvan\\UserService\\UserService.csproj": {}
+    "D:\\hoanganh\\UserService\\UserService.csproj": {}
   },
   "projects": {
-    "D:\\hoanganh\\luanvan\\UserService\\UserService.csproj": {
+    "D:\\hoanganh\\UserService\\UserService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\hoanganh\\luanvan\\UserService\\UserService.csproj",
+        "projectUniqueName": "D:\\hoanganh\\UserService\\UserService.csproj",
         "projectName": "UserService",
-        "projectPath": "D:\\hoanganh\\luanvan\\UserService\\UserService.csproj",
+        "projectPath": "D:\\hoanganh\\UserService\\UserService.csproj",
         "packagesPath": "C:\\Users\\nlhoanganh\\.nuget\\packages\\",
-        "outputPath": "D:\\hoanganh\\luanvan\\UserService\\obj\\",
+        "outputPath": "D:\\hoanganh\\UserService\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -69,6 +69,16 @@
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
               "version": "[6.0.9, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.9, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[6.0.7, )"
             },
             "RabbitMQ.Client": {
               "target": "Package",

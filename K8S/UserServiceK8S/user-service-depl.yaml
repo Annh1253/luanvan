@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: user-service
-        image: just4codee/userservice
+        image: just4codee/userservice:postgredb
 ---
 apiVersion: v1
 kind: Service
