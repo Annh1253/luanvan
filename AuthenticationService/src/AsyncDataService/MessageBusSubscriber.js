@@ -4,7 +4,6 @@ var EventProcessor = require('../EventProcessing/EventProcessor');
 
 amqp.connect(`amqp://${process.env.RABBITMQ_HOST_K8S}:${process.env.RABBITMQ_PORT_K8S}`, function(error0, connection) {
   if (error0) {
-    console.log(process.env.RABBITMQ_HOST_K8S, process.env.RABBITMQ_PORT_K8S);
     throw error0;
   }
   connection.createChannel(function(error1, channel) {

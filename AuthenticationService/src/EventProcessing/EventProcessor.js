@@ -1,10 +1,6 @@
 const CredentialRepository = require('../Repositories/CredentialRepository');
+const EventType = require("./EventType")
 
-const EventType = {
-    NewUserCreate: 'NewUserCreate',
-    UpdateUserCredential: 'UpdateUserCredential',
-    DeleteUser: 'DeleteUser'
-};
 
 const addCredential = (message) =>
     {

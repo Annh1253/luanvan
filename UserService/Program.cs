@@ -11,6 +11,8 @@ using UserService.Repositories;
 using UserService.Services;
 using Swashbuckle.AspNetCore.Filters;
 using UserService.Helpers;
+using UserService.AsyncDataService;
+using UserService.EventProcessing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +35,14 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 // Add services to the container.
 builder.Services.AddScoped<IUserService, UsersService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+
+// Add message bus util
 builder.Services.AddSingleton<IMessageBusClient, MessageBusClient>();
+builder.Services.AddSingleton<IEventProcessor, EventProcessor>();
+builder.Services.AddHostedService<MessageBusSubscriber>();
+
+
+// Add mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 //Add helpers to container

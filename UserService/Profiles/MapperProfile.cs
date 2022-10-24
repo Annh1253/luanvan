@@ -17,6 +17,9 @@ namespace UserService.Profiles
             CreateMap<UserDtoRequest, User>();
             CreateMap<Role, RoleDtoRequest>();
             CreateMap<RoleDtoRequest, Role>();
+
+            CreateMap<CredentialPublishedDto, UserDtoRequest>();
+
             CreateMap<ServiceResponse<UserDtoResponse>, ControllerResponse<UserDtoResponse>>();
             CreateMap<ServiceResponse<List<UserDtoResponse>>, ControllerResponse<List<UserDtoResponse>>>();
 

@@ -41,7 +41,7 @@ spec:
             port:
               number: 80
       - pathType: Prefix
-        path: "/auth/login"
+        path: "/auth"
         backend:
           service:
             name: auth-service-clusterip-service
@@ -54,10 +54,3 @@ spec:
             name: mongo-express-clusterip-service
             port: 
               number: 8081
-      - pathType: Prefix
-        path: "/auth"
-        backend:
-          service:
-            name: node-auth-clusterip-service
-            port: 
-              number: 3001
