@@ -5,10 +5,10 @@ namespace UserService.Contracts.InterfaceContracts
 {
     public interface IRoleService
     {
-        ServiceResponse<List<RoleDtoRequest>> GetRoles();
-        ServiceResponse<RoleDtoRequest> GetById(int id);
+        ServiceResponse<List<RoleDtoResponse>> GetRoles();
+        ServiceResponse<RoleDtoResponse> GetById(int id);
  
-        ServiceResponse<RoleDtoRequest> AddRole(RoleDtoRequest role);
+        ServiceResponse<RoleDtoResponse> AddRole(RoleDtoRequest role);
 
         bool Exist(int id);
 

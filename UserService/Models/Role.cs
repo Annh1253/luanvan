@@ -8,6 +8,8 @@ namespace UserService.Models
         public int Id { get; set; }
         public string Name { get; set; } = DEFAULT_ROLE_NAME;
 
+        
+
         public List<User> _users = new List<User>();
         
         protected ILazyLoader LazyLoader { get; set; }

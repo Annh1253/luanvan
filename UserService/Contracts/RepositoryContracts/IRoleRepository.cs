@@ -9,7 +9,6 @@ namespace UserService.Contracts.RepositoryContracts
     public interface IRoleRepository
     {
         ICollection<Role> GetAllRoles();
-
         Role GetById(int id);
 
         bool AddRole(Role role);

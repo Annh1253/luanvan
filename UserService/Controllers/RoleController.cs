@@ -22,9 +22,11 @@ namespace UserService.Controllers
         [HttpGet]
         public IActionResult GetRoles()
         {
-            ServiceResponse<List<RoleDtoRequest>> serviceResponse = _roleService.GetRoles();
-            ControllerResponse<List<RoleDtoRequest>> controllerResponse = _mapper.Map<ControllerResponse<List<RoleDtoRequest>>>(serviceResponse);
+            ServiceResponse<List<RoleDtoResponse>> serviceResponse = _roleService.GetRoles();
+            ControllerResponse<List<RoleDtoResponse>> controllerResponse = _mapper.Map<ControllerResponse<List<RoleDtoResponse>>>(serviceResponse);
             return StatusCode((int)serviceResponse.StatusCode, controllerResponse);
         }
+
+        
     }
 }

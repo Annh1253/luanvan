@@ -1,0 +1,154 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using AutoMapper;
+using ExamService.Contracts.RepositoryContracts;
+using ExamService.Contracts.ServiceContracts;
+using ExamService.Dtos;
+using ExamService.Models;
+using ExamService.Response;
+
+namespace ExamService.Services
+{
+    public class ExamsService : IExamService
+    {
+        private readonly IExamRepository _examRepository;
+        private readonly IMapper _mapper;
+        private readonly ITopicRepository _topicRepository;
+
+
+        public ExamsService(IExamRepository examRepository, ITopicRepository topicRepository, IMapper mapper)
+        {
+            this._topicRepository = topicRepository;
+            this._examRepository = examRepository;
+            this._mapper = mapper;
+        }
+        public ServiceResponse<ExamResponseDto> AddExam(int TopicId, ExamRequestDto examRequestDto)
+        {
+            Exam examEntity = _mapper.Map<Exam>(examRequestDto);
+
+            if(!_topicRepository.Exist(TopicId)) return new ServiceResponse<ExamResponseDto>(){
+                Success = false,
+                StatusCode = HttpStatusCode.NotFound,
+                Message = "Topic not found"
+            };
+          
+            Topic topic = _topicRepository.GetById(TopicId);
+            examEntity.Topic = topic;
+
+            bool SavedSucceeded = _examRepository.AddExam(examEntity);   
+            
+            // if guard
+            if (!SavedSucceeded) return new ServiceResponse<ExamResponseDto>(){
+                Success = false,
+                StatusCode = HttpStatusCode.InternalServerError,
+                Message = "Some thing went wrong when saving"
+            };
+            
+            ExamResponseDto examReadDto = _mapper.Map<ExamResponseDto>(examEntity);
+            var serviceResponse = new ServiceResponse<ExamResponseDto>();
+            serviceResponse.Data = examReadDto;
+            serviceResponse.StatusCode = HttpStatusCode.Created;
+            return serviceResponse;
+        }
+
+        public bool Exist(int id)
+        {
+           return _examRepository.Exist(id);
+        }
+
+        public ServiceResponse<ExamResponseDto> GetById(int id)
+        {
+            Exam examEntity = _examRepository.GetById(id);
+         
+            
+            // if guard
+            if (examEntity != null) return new ServiceResponse<ExamResponseDto>(){
+                Success = false,
+                StatusCode = HttpStatusCode.NotFound,
+                Message = "Exam not found"
+            };
+            
+            ExamResponseDto examReadDto = _mapper.Map<ExamResponseDto>(examEntity);
+            var serviceResponse = new ServiceResponse<ExamResponseDto>();
+            serviceResponse.Data = examReadDto;
+            return serviceResponse;
+        }
+
+        public ServiceResponse<List<ExamResponseDto>> GetExams()
+        {
+            List<Exam> examList = _examRepository.GetAllExams();
+            List<ExamResponseDto> examReadDtoList = _mapper.Map<List<ExamResponseDto>>(examList);
+            var serviceResponse = new ServiceResponse<List<ExamResponseDto>>();
+            serviceResponse.Data = examReadDtoList;
+            return serviceResponse;
+        }
+
+        public ServiceResponse<ExamResponseDto> RemoveExam(int ExamId)
+        {
+            if(!_examRepository.Exist(ExamId))
+            {
+                return new ServiceResponse<ExamResponseDto>()
+                {
+                    Success = false,
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = "Exam not found"
+                };
+            }
+
+            Exam examToDelete = _examRepository.GetById(ExamId);
+            bool isSuceeded = _examRepository.RemoveExam(examToDelete);
+            if(!isSuceeded)
+            {
+                return new ServiceResponse<ExamResponseDto>()
+                {
+                    Success = false,
+                    Message = "Something has gone wrong while deleting",
+                    StatusCode = HttpStatusCode.InternalServerError
+                };
+            }
+            
+            var serviceResponse = new ServiceResponse<ExamResponseDto>()
+                                    {
+                                        Success = true,
+                                        Message = "Delete Successfully",
+                                        StatusCode = HttpStatusCode.OK
+                                    };
+            return serviceResponse;
+        }
+
+        public ServiceResponse<ExamResponseDto> UpdateExam(int oldExamId, ExamUpdateRequestDto examUpdateRequestDto)
+        {
+            if(!_examRepository.Exist(oldExamId))
+            {
+                return new ServiceResponse<ExamResponseDto>()
+                        {
+                            Success = false,
+                            Message = "Exam not found",
+                            StatusCode = HttpStatusCode.NotFound
+                        };
+            }
+
+            bool isSuceeded = _examRepository.UpdateExam(oldExamId, examUpdateRequestDto);
+            if(!isSuceeded)
+            {
+                return new ServiceResponse<ExamResponseDto>()
+                {
+                    Success = false,
+                    Message = "Something has gone wrong",
+                    StatusCode = HttpStatusCode.InternalServerError
+                };
+            }
+
+            ServiceResponse<ExamResponseDto> serviceResponse = new ServiceResponse<ExamResponseDto>()
+            {
+                Message = "Update Successfully",
+                StatusCode = HttpStatusCode.OK
+            };
+
+            return serviceResponse;
+        }
+    }
+}

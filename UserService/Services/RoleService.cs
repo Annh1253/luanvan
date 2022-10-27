@@ -23,20 +23,20 @@ namespace UserService.Services
             this._roleRepository = roleRepository;
             
         }
-        public ServiceResponse<RoleDtoRequest> AddRole(RoleDtoRequest role)
+        public ServiceResponse<RoleDtoResponse> AddRole(RoleDtoRequest role)
         {
             Role roleEntity = _mapper.Map<Role>(role);
             bool SavedSucceeded = _roleRepository.AddRole(roleEntity);   
             
             // if guard
-            if (!SavedSucceeded) return new ServiceResponse<RoleDtoRequest>(){
+            if (!SavedSucceeded) return new ServiceResponse<RoleDtoResponse>(){
                 Success = false,
                 StatusCode = HttpStatusCode.InternalServerError,
                 Message = "Some thing went wrong when saving"
             };
             
-            RoleDtoRequest roleReadDto = _mapper.Map<RoleDtoRequest>(roleEntity);
-            var serviceResponse = new ServiceResponse<RoleDtoRequest>();
+            RoleDtoResponse roleReadDto = _mapper.Map<RoleDtoResponse>(roleEntity);
+            var serviceResponse = new ServiceResponse<RoleDtoResponse>();
             serviceResponse.Data = roleReadDto;
             return serviceResponse;
         }
@@ -47,29 +47,29 @@ namespace UserService.Services
         }
 
     
-        public ServiceResponse<RoleDtoRequest> GetById(int id)
+        public ServiceResponse<RoleDtoResponse> GetById(int id)
         {
             Role roleEntity = _roleRepository.GetById(id);
          
             
             // if guard
-            if (roleEntity != null) return new ServiceResponse<RoleDtoRequest>(){
+            if (roleEntity != null) return new ServiceResponse<RoleDtoResponse>(){
                 Success = false,
                 StatusCode = HttpStatusCode.NotFound,
                 Message = "Role not found"
             };
             
-            RoleDtoRequest roleReadDto = _mapper.Map<RoleDtoRequest>(roleEntity);
-            var serviceResponse = new ServiceResponse<RoleDtoRequest>();
+            RoleDtoResponse roleReadDto = _mapper.Map<RoleDtoResponse>(roleEntity);
+            var serviceResponse = new ServiceResponse<RoleDtoResponse>();
             serviceResponse.Data = roleReadDto;
             return serviceResponse;
         }
 
-        public ServiceResponse<List<RoleDtoRequest>> GetRoles()
+        public ServiceResponse<List<RoleDtoResponse>> GetRoles()
         {
             List<Role> roleList = (List<Role>) _roleRepository.GetAllRoles();
-            List<RoleDtoRequest> roleReadDtoList = _mapper.Map<List<RoleDtoRequest>>(roleList);
-             var serviceResponse = new ServiceResponse<List<RoleDtoRequest>>();
+            List<RoleDtoResponse> roleReadDtoList = _mapper.Map<List<RoleDtoResponse>>(roleList);
+             var serviceResponse = new ServiceResponse<List<RoleDtoResponse>>();
             serviceResponse.Data = roleReadDtoList;
             return serviceResponse;
         }
