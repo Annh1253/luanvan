@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ExamService.Contracts.RepositoryContracts;
+using ExamService.Dtos;
+using ExamService.Helpers;
 using ExamService.Models;
 using UserService.Data;
 
@@ -19,6 +21,7 @@ namespace ExamService.Repositories
         }
         public bool AddOption(Option option)
         {
+            Console.WriteLine("Saving option");
             _dbContext.Options.Add(option);
             return SaveChanges();
         }
@@ -38,7 +41,31 @@ namespace ExamService.Repositories
            return _dbContext.Options.FirstOrDefault(o => o.Id == id);
         }
 
-       
+        public bool RemoveOption(Option question)
+        {
+            try{
+                _dbContext.Options.Remove(question);
+            }catch(Exception ex)
+            {
+                return false;
+            }
+
+            return SaveChanges();
+        }
+
+        public bool UpdateOption(int OldOptionId, OptionUpdateRequestDto newOption)
+        {
+            try{
+                Option oldOption = _dbContext.Options.First(o => o.Id == OldOptionId);
+                CRUDHelper.CopyNoneNull(newOption, oldOption);
+
+            }catch(Exception ex)
+            {
+                return false;
+            }
+
+            return SaveChanges();
+        }
 
         private Boolean SaveChanges()
         {

@@ -40,7 +40,11 @@ namespace ExamService.Profiles
             CreateMap<ServiceResponse<List<ExamResponseDto>>, ControllerResponse<List<ExamResponseDto>>>();
 
            
-            
+            CreateMap<ServiceResponse<QuestionResponseDto>, ControllerResponse<QuestionResponseDto>>();
+            CreateMap<ServiceResponse<List<QuestionResponseDto>>, ControllerResponse<List<QuestionResponseDto>>>();
+
+            CreateMap<ServiceResponse<OptionResponseDto>, ControllerResponse<OptionResponseDto>>();
+            CreateMap<ServiceResponse<List<OptionResponseDto>>, ControllerResponse<List<OptionResponseDto>>>();
         }
     }
 }

@@ -11,7 +11,11 @@ namespace ExamService.Contracts.ServiceContracts
     {
         ServiceResponse<List<QuestionResponseDto>> GetQuestions();
         ServiceResponse<QuestionResponseDto> GetById(int id);
- 
+
+        ServiceResponse<QuestionResponseDto> UpdateQuestion(int oldQuestionId, QuestionUpdateRequestDto QuestionRequestDto);
+
+        ServiceResponse<QuestionResponseDto> RemoveQuestion(int id);
+
         ServiceResponse<QuestionResponseDto> AddQuestion(int ExamId, QuestionRequestDto questionRequestDto);
 
         bool Exist(int id);

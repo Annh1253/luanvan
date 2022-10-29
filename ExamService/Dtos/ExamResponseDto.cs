@@ -13,6 +13,9 @@ namespace ExamService.Dtos
 
         public String AuthorEmail { get; set; }
 
+        public int TimeLimit { get; set; }
+
+
         public List<QuestionResponseDto> Questions { get; set; }
     }
 }

@@ -36,9 +36,9 @@ namespace UserService.Controllers
                 {
                     //create claims details based on the user information
                     var claims = new[] {
-                        new Claim("Email", user.Email),
+                        new Claim("email", user.Email),
                         new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "Admin"),
-                        new Claim(ClaimTypes.Role, "Employee")
+                        new Claim(ClaimTypes.Role, "Contestant")
                     };
 
                     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

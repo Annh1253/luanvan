@@ -14,6 +14,10 @@ namespace ExamService.Contracts.ServiceContracts
  
         ServiceResponse<OptionResponseDto> AddOption(int QuestionId, OptionRequestDto optionRequestDto);
 
+        ServiceResponse<OptionResponseDto> UpdateOption(int oldOptionId, OptionUpdateRequestDto OptionRequestDto);
+
+        ServiceResponse<OptionResponseDto> RemoveOption(int id);
+
         bool Exist(int id);
     }
 }

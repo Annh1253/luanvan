@@ -6,6 +6,7 @@ class MessagePublisher {
   publishMessage(message) {
     amqp.connect(
       `amqp://${process.env.RABBITMQ_HOST_K8S}:${process.env.RABBITMQ_PORT_K8S}`,
+      // `amqp://${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`,
       function (error0, connection) {
         if (error0) {
           throw error0;
@@ -32,7 +33,7 @@ class MessagePublisher {
               "",
               Buffer.from(JSON.stringify(message))
             );
-            console.log(" [x] Sent %s", message);
+            console.log(" [x] Sent %s", message, "To exchange : " + authServiceExchange + "which binded to : " + userServiceQueue);
           } catch (ex) {
             throw ex;
           }

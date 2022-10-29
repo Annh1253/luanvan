@@ -4,17 +4,21 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Mvc;
 using UserService.AsyncDataServices;
+using UserService.Constants;
 using UserService.Contracts.InterfaceContracts;
 using UserService.Dtos;
+using UserService.Filters;
+using UserService.Helpers;
 using UserService.Response;
 
 namespace UserService.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [AuthenticateFilter]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -29,12 +33,30 @@ namespace UserService.Controllers
             
         }
 
-        [Authorize(Roles ="Admin")]
+      
         [HttpGet]
+        [AuthorizeFilter(RoleType.Contestant)]
         public ActionResult GetUsers()
         {
+
             ServiceResponse<List<UserDtoResponse>> serviceResponse = _userService.GetUsers();
             ControllerResponse<List<UserDtoResponse>> controllerReponse = _mapper.Map<ControllerResponse<List<UserDtoResponse>>>(serviceResponse);
+            return StatusCode((int)serviceResponse.StatusCode, controllerReponse);
+        }
+
+        [HttpGet("{userId}")]
+        public ActionResult GetUserById(int userId)
+        {
+            ServiceResponse<UserDtoResponse> serviceResponse = _userService.GetById(userId);
+            ControllerResponse<UserDtoResponse> controllerReponse = _mapper.Map<ControllerResponse<UserDtoResponse>>(serviceResponse);
+            return StatusCode((int)serviceResponse.StatusCode, controllerReponse);
+        }
+
+        [HttpGet("email/{userEmail}")]
+        public ActionResult GetUserByEmail(string userEmail)
+        {
+            ServiceResponse<UserDtoResponse> serviceResponse = _userService.GetByEmail(userEmail);
+            ControllerResponse<UserDtoResponse> controllerReponse = _mapper.Map<ControllerResponse<UserDtoResponse>>(serviceResponse);
             return StatusCode((int)serviceResponse.StatusCode, controllerReponse);
         }
 

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\hoanganh\\finalLuanVan\\ExamService\\ExamService.csproj": {}
+    "D:\\hoanganh\\luanvan\\ExamService\\ExamService.csproj": {}
   },
   "projects": {
-    "D:\\hoanganh\\finalLuanVan\\ExamService\\ExamService.csproj": {
+    "D:\\hoanganh\\luanvan\\ExamService\\ExamService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\hoanganh\\finalLuanVan\\ExamService\\ExamService.csproj",
+        "projectUniqueName": "D:\\hoanganh\\luanvan\\ExamService\\ExamService.csproj",
         "projectName": "ExamService",
-        "projectPath": "D:\\hoanganh\\finalLuanVan\\ExamService\\ExamService.csproj",
+        "projectPath": "D:\\hoanganh\\luanvan\\ExamService\\ExamService.csproj",
         "packagesPath": "C:\\Users\\nlhoanganh\\.nuget\\packages\\",
-        "outputPath": "D:\\hoanganh\\finalLuanVan\\ExamService\\obj\\",
+        "outputPath": "D:\\hoanganh\\luanvan\\ExamService\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -27,13 +27,13 @@ namespace ExamService.Services
             
             // if guard
             if (!SavedSucceeded) return new ServiceResponse<TopicResponseDto>(){
-                Success = false,
                 StatusCode = HttpStatusCode.InternalServerError,
                 Message = "Some thing went wrong when saving"
             };
             
             TopicResponseDto topicReadDto = _mapper.Map<TopicResponseDto>(topicEntity);
             var serviceResponse = new ServiceResponse<TopicResponseDto>();
+            serviceResponse.Success = true;
             serviceResponse.Data = topicReadDto;
             return serviceResponse;
         }
@@ -50,13 +50,13 @@ namespace ExamService.Services
             
             // if guard
             if (topicEntity != null) return new ServiceResponse<TopicResponseDto>(){
-                Success = false,
                 StatusCode = HttpStatusCode.NotFound,
                 Message = "Topic not found"
             };
             
             TopicResponseDto topicReadDto = _mapper.Map<TopicResponseDto>(topicEntity);
             var serviceResponse = new ServiceResponse<TopicResponseDto>();
+            serviceResponse.Success = true;
             serviceResponse.Data = topicReadDto;
             return serviceResponse;
         }
@@ -66,6 +66,7 @@ namespace ExamService.Services
             List<Topic> topicList = _topicRepository.GetAllTopics();
             List<TopicResponseDto> topicReadDtoList = _mapper.Map<List<TopicResponseDto>>(topicList);
             var serviceResponse = new ServiceResponse<List<TopicResponseDto>>();
+            serviceResponse.Success = true;
             serviceResponse.Data = topicReadDtoList;
             return serviceResponse;
         }

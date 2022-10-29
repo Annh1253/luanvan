@@ -94,6 +94,25 @@ namespace UserService.Services
             return serviceResponse;
         }
 
+         public ServiceResponse<UserDtoResponse> GetByEmail(string email)
+        {
+            User user = _userRepository.GetByEmail(email);
+            var serviceResponse = new ServiceResponse<UserDtoResponse>();
+            if(user == null)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User not found";
+                serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            }
+            else
+            {
+                UserDtoResponse userReadDto = _modelMapper.Map<UserDtoResponse>(user);
+                serviceResponse.Data = userReadDto;
+            }
+            return serviceResponse;
+        }
+
         public ServiceResponse<List<UserDtoResponse>> GetUsers()
         {
        
@@ -171,8 +190,8 @@ namespace UserService.Services
 
         private bool UserCredentialChange(UserDtoRequest userDtoRequest, User user)
         {
-            if(userDtoRequest.Email == null || userDtoRequest.Password == null || 
-              (userDtoRequest.Email == user.Email && userDtoRequest.Password == user.Password)) 
+            if(userDtoRequest.Password == null || 
+              (userDtoRequest.Password == user.Password)) 
             {
                 return false;
             } 

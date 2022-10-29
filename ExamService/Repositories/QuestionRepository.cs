@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ExamService.Contracts.RepositoryContracts;
+using ExamService.Dtos;
+using ExamService.Helpers;
 using ExamService.Models;
 using UserService.Data;
 
@@ -18,7 +20,12 @@ namespace ExamService.Repositories
         }
         public bool AddQuestion(Question question)
         {
-            _dbContext.Questions.Add(question);
+            try{
+                _dbContext.Questions.Add(question);
+            }catch(Exception ex)
+            {
+                    return false;
+            }
             return SaveChanges();
         }
 
@@ -41,6 +48,23 @@ namespace ExamService.Repositories
          private Boolean SaveChanges()
         {
             return this._dbContext.SaveChanges()>0;
+        }
+
+         public bool UpdateQuestion(int OldQuestionId , QuestionUpdateRequestDto newQuestion){
+            Question oldQuestion = _dbContext.Questions.First(e => e.Id == OldQuestionId);
+            CRUDHelper.CopyNoneNull(newQuestion, oldQuestion);
+            return SaveChanges();
+        }
+
+        public bool RemoveQuestion(Question question)
+        {
+            try{
+                _dbContext.Questions.Remove(question);
+            }catch(Exception ex)
+            {
+                return false;
+            }
+            return SaveChanges();
         }
     }
 }

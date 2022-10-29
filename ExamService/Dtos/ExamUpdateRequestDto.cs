@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,5 @@ namespace ExamService.Dtos
         public String? AuthorEmail { get; set; }
 
          public int? TimeLimit { get; set; }
-
-        public List<QuestionRequestDto>? Questions {get; set;}
     }
 }

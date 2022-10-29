@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using ExamService.Constants;
 using ExamService.Contracts.RepositoryContracts;
 using ExamService.Contracts.ServiceContracts;
 using ExamService.Dtos;
@@ -29,8 +30,7 @@ namespace ExamService.Services
         {
             Exam examEntity = _mapper.Map<Exam>(examRequestDto);
 
-            if(!_topicRepository.Exist(TopicId)) return new ServiceResponse<ExamResponseDto>(){
-                Success = false,
+            if(!_topicRepository.Exist(TopicId)) return new ServiceResponse<ExamResponseDto>() {
                 StatusCode = HttpStatusCode.NotFound,
                 Message = "Topic not found"
             };
@@ -41,16 +41,16 @@ namespace ExamService.Services
             bool SavedSucceeded = _examRepository.AddExam(examEntity);   
             
             // if guard
-            if (!SavedSucceeded) return new ServiceResponse<ExamResponseDto>(){
-                Success = false,
+            if (!SavedSucceeded) return new ServiceResponse<ExamResponseDto>() {
                 StatusCode = HttpStatusCode.InternalServerError,
-                Message = "Some thing went wrong when saving"
+                Message = ErrorMessage.CREATE
             };
             
             ExamResponseDto examReadDto = _mapper.Map<ExamResponseDto>(examEntity);
             var serviceResponse = new ServiceResponse<ExamResponseDto>();
             serviceResponse.Data = examReadDto;
             serviceResponse.StatusCode = HttpStatusCode.Created;
+            serviceResponse.Success = true;
             return serviceResponse;
         }
 
@@ -65,8 +65,7 @@ namespace ExamService.Services
          
             
             // if guard
-            if (examEntity != null) return new ServiceResponse<ExamResponseDto>(){
-                Success = false,
+            if (examEntity != null) return new ServiceResponse<ExamResponseDto>() {
                 StatusCode = HttpStatusCode.NotFound,
                 Message = "Exam not found"
             };
@@ -74,6 +73,7 @@ namespace ExamService.Services
             ExamResponseDto examReadDto = _mapper.Map<ExamResponseDto>(examEntity);
             var serviceResponse = new ServiceResponse<ExamResponseDto>();
             serviceResponse.Data = examReadDto;
+            serviceResponse.Success = true;
             return serviceResponse;
         }
 
@@ -83,6 +83,7 @@ namespace ExamService.Services
             List<ExamResponseDto> examReadDtoList = _mapper.Map<List<ExamResponseDto>>(examList);
             var serviceResponse = new ServiceResponse<List<ExamResponseDto>>();
             serviceResponse.Data = examReadDtoList;
+            serviceResponse.Success = true;
             return serviceResponse;
         }
 
@@ -91,8 +92,7 @@ namespace ExamService.Services
             if(!_examRepository.Exist(ExamId))
             {
                 return new ServiceResponse<ExamResponseDto>()
-                {
-                    Success = false,
+                { 
                     StatusCode = HttpStatusCode.NotFound,
                     Message = "Exam not found"
                 };
@@ -103,19 +103,18 @@ namespace ExamService.Services
             if(!isSuceeded)
             {
                 return new ServiceResponse<ExamResponseDto>()
-                {
-                    Success = false,
+                { 
                     Message = "Something has gone wrong while deleting",
                     StatusCode = HttpStatusCode.InternalServerError
                 };
             }
             
             var serviceResponse = new ServiceResponse<ExamResponseDto>()
-                                    {
-                                        Success = true,
-                                        Message = "Delete Successfully",
-                                        StatusCode = HttpStatusCode.OK
-                                    };
+                {
+                    Success = true,
+                    Message = "Delete Successfully",
+                    StatusCode = HttpStatusCode.OK
+                };
             return serviceResponse;
         }
 
@@ -125,7 +124,6 @@ namespace ExamService.Services
             {
                 return new ServiceResponse<ExamResponseDto>()
                         {
-                            Success = false,
                             Message = "Exam not found",
                             StatusCode = HttpStatusCode.NotFound
                         };
@@ -135,16 +133,16 @@ namespace ExamService.Services
             if(!isSuceeded)
             {
                 return new ServiceResponse<ExamResponseDto>()
-                {
-                    Success = false,
-                    Message = "Something has gone wrong",
+                { 
+                    Message = ErrorMessage.UPDATE,
                     StatusCode = HttpStatusCode.InternalServerError
                 };
             }
 
             ServiceResponse<ExamResponseDto> serviceResponse = new ServiceResponse<ExamResponseDto>()
             {
-                Message = "Update Successfully",
+                Message = SuccessMessage.UPDATE,
+                Success = true,
                 StatusCode = HttpStatusCode.OK
             };
 

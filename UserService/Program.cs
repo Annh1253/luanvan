@@ -11,11 +11,15 @@ using UserService.Repositories;
 using UserService.Services;
 using Swashbuckle.AspNetCore.Filters;
 using UserService.Helpers;
+using UserService.Middlewares;
+
 using UserService.AsyncDataService;
 using UserService.EventProcessing;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -47,6 +51,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 //Add helpers to container
 builder.Services.AddSingleton<IMessagePublisher, MessagePublisher>();
+builder.Services.AddSingleton<IAuthorizationFilter, AuthorizeAttribute>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -86,6 +91,13 @@ if (app.Environment.IsDevelopment())
 
 //Seed Data
 PrepDb.PrepPopulation(app);
+
+app.UseCors(x => x
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
+
+app.UseMiddleware<JwtMiddleware>();
 
 app.UseHttpsRedirection();
 

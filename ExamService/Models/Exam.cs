@@ -12,6 +12,8 @@ namespace ExamService.Models
 
         public String AuthorEmail { get; set; } = "";
 
+        public int TimeLimit { get; set; } = 10;
+
         private Topic _topic = new Topic();
 
         private List<Question>? _questions = new List<Question>();

@@ -11,6 +11,9 @@ namespace UserService.AsyncDataServices
         private readonly IConnection _connection;
         private readonly IModel _channel;
 
+        
+        private string _userServiceExchangee = "UserServiceExchange";
+
         public MessageBusClient(IConfiguration configuration)
         {
             this._configuration = configuration;
@@ -24,8 +27,8 @@ namespace UserService.AsyncDataServices
                                  exclusive: false,
                                  autoDelete: false,
                                  arguments: null);
-                _channel.ExchangeDeclare(exchange: "UserServiceExchange", type: ExchangeType.Direct);
-                _channel.QueueBind(queue: "auth-service-queue", exchange: "UserServiceExchange", routingKey: "");
+                _channel.ExchangeDeclare(exchange: _userServiceExchangee, type: ExchangeType.Direct);
+                _channel.QueueBind(queue: "auth-service-queue", exchange: _userServiceExchangee, routingKey: "");
               
                 _connection.ConnectionShutdown += RabbitMQ_ConnectionShutdown;
                 Console.WriteLine("---> Connected to Message Bus");
@@ -55,7 +58,7 @@ namespace UserService.AsyncDataServices
         private void SendMessage(string message)
         {
             var body = Encoding.UTF8.GetBytes(message);
-            _channel.BasicPublish(exchange: "UserServiceExchange", routingKey: "", basicProperties: null, body: body);
+            _channel.BasicPublish(exchange: _userServiceExchangee, routingKey: "", basicProperties: null, body: body);
             Console.WriteLine($"---> We have sent message: {message}");
         }
 

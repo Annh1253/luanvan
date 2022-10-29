@@ -10,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services.
 builder.Services.AddScoped<ITopicService, TopicService>();
 builder.Services.AddScoped<IExamService, ExamsService>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
+builder.Services.AddScoped<IOptionService, OptionService>();
+
 
 
 

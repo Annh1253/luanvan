@@ -63,6 +63,9 @@ namespace ExamService.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("TimeLimit")
+                        .HasColumnType("integer");
+
                     b.Property<int>("TopicId")
                         .HasColumnType("integer");
 

@@ -4,29 +4,23 @@ const cryptoJS = require("crypto-js");
 class CredentialRepository {
   async updateCredential(message) {
       if (message.Password) {
-        console.log("updating..");
+        console.log("updating.. new pass: " + message.Password);
         message.Password = cryptoJS.AES.encrypt(
           message.Password,
           process.env.PASS_SECURE
         ).toString();
       }
       let filter = {
-        externalId : message.ExternalId
+        email : message.Email
       }
       try {
-        let roleList = [];
-        message.Roles.forEach(role => {
-            roleList.push({
-                name: role.Name
-            })
-        });
+        
   
         let updatedCredentail = await Credential.findOne(filter);
-        updatedCredentail.email = message.Email;
         updatedCredentail.password = message.Password;
-        updatedCredentail.roles = roleList;
         updatedCredentail.save()
         .then((data) => {
+          console.log(data);
           console.log("Save successfully");
           return data;
         })
