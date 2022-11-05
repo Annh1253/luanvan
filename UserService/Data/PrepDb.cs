@@ -22,6 +22,7 @@ namespace UserService.Data
                 try
                 {
                     //context.Database.EnsureCreated();
+                    
                     context.Database.Migrate();
                 }
                 catch (Exception ex) 

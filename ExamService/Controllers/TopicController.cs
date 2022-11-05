@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExamService.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/examservice/[controller]")]
     public class TopicController : ControllerBase
     {
         private readonly ITopicService _topicService;

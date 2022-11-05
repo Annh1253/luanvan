@@ -6,7 +6,7 @@ using ExamService.Contracts.RepositoryContracts;
 using ExamService.Dtos;
 using ExamService.Helpers;
 using ExamService.Models;
-using UserService.Data;
+using ExamService.Data;
 
 namespace ExamService.Repositories
 {
@@ -46,6 +46,11 @@ namespace ExamService.Repositories
              return _dbContext.Exams.FirstOrDefault(e => e.Name == name);
         }
 
+         public Exam GetByEmail(string email)
+        {
+             return _dbContext.Exams.FirstOrDefault(e => e.AuthorEmail == email);
+        }
+
         public bool UpdateExam(int OldExamId , ExamUpdateRequestDto newExam){
             Exam oldExam = _dbContext.Exams.First(e => e.Id == OldExamId);
             CRUDHelper.CopyNoneNull(newExam, oldExam);
@@ -62,6 +67,16 @@ namespace ExamService.Repositories
         private Boolean SaveChanges()
         {
             return this._dbContext.SaveChanges()>0;
+        }
+
+        public List<Exam> GetAllExamsByTopic(Topic topic)
+        {
+            return this._dbContext.Exams.Where(exam => exam.Topic == topic).ToList();
+        }
+
+        public List<Exam> GetAllExamsByAuthor(string AuthorEmail)
+        {
+            return this._dbContext.Exams.Where(exam => exam.AuthorEmail == AuthorEmail).ToList();
         }
     }
 }

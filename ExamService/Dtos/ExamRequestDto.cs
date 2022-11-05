@@ -13,7 +13,7 @@ namespace ExamService.Dtos
 
         public int TimeLimit { get; set; }
 
-        public List<QuestionRequestDto> Questions {get; set;}
+        public List<QuestionRequestDto>? Questions {get; set;}
         
     }
 }

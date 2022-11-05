@@ -10,7 +10,7 @@ namespace ExamService.Models
     {
         public int Id { get; set; }
 
-        public int ExternalId { get; set; }
+        public int ExternalId { get; set; } = 0;
 
         public string Email { get; set; }      
 

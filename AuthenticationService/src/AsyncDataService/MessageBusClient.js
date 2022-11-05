@@ -1,12 +1,14 @@
 const amqp = require("amqplib/callback_api");
 const userServiceQueue = "user-service-queue";
+const examServiceQueue = "exam-service-queue";
+
 const authServiceExchange = "AuthServiceExchange";
 
 class MessagePublisher {
   publishMessage(message) {
     amqp.connect(
-      `amqp://${process.env.RABBITMQ_HOST_K8S}:${process.env.RABBITMQ_PORT_K8S}`,
-      // `amqp://${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`,
+      // `amqp://${process.env.RABBITMQ_HOST_K8S}:${process.env.RABBITMQ_PORT_K8S}`,
+      `amqp://${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`,
       function (error0, connection) {
         if (error0) {
           throw error0;
@@ -26,7 +28,12 @@ class MessagePublisher {
               durable: true,
             });
 
+            channel.assertQueue(examServiceQueue, {
+              durable: true,
+            });
+
             channel.bindQueue(userServiceQueue, authServiceExchange, "");
+            channel.bindQueue(examServiceQueue, authServiceExchange, "");
 
             channel.publish(
               authServiceExchange,

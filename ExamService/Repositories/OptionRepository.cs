@@ -6,7 +6,7 @@ using ExamService.Contracts.RepositoryContracts;
 using ExamService.Dtos;
 using ExamService.Helpers;
 using ExamService.Models;
-using UserService.Data;
+using ExamService.Data;
 
 namespace ExamService.Repositories
 {

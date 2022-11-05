@@ -8,8 +8,10 @@ using ExamService.Constants;
 using ExamService.Contracts.RepositoryContracts;
 using ExamService.Contracts.ServiceContracts;
 using ExamService.Dtos;
+using ExamService.Helpers;
 using ExamService.Models;
 using ExamService.Response;
+using ExamService.Ultils;
 
 namespace ExamService.Services
 {
@@ -17,14 +19,16 @@ namespace ExamService.Services
     {
         private readonly IExamRepository _examRepository;
         private readonly IMapper _mapper;
+        private readonly IMessagePublisher _messagePublisher;
         private readonly ITopicRepository _topicRepository;
 
 
-        public ExamsService(IExamRepository examRepository, ITopicRepository topicRepository, IMapper mapper)
+        public ExamsService(IExamRepository examRepository, ITopicRepository topicRepository, IMapper mapper, IMessagePublisher messagePublisher)
         {
             this._topicRepository = topicRepository;
             this._examRepository = examRepository;
             this._mapper = mapper;
+            this._messagePublisher = messagePublisher;
         }
         public ServiceResponse<ExamResponseDto> AddExam(int TopicId, ExamRequestDto examRequestDto)
         {
@@ -51,6 +55,9 @@ namespace ExamService.Services
             serviceResponse.Data = examReadDto;
             serviceResponse.StatusCode = HttpStatusCode.Created;
             serviceResponse.Success = true;
+
+            _messagePublisher.PublishExam(examReadDto, EventType.NewExamCreate);
+
             return serviceResponse;
         }
 
@@ -65,7 +72,7 @@ namespace ExamService.Services
          
             
             // if guard
-            if (examEntity != null) return new ServiceResponse<ExamResponseDto>() {
+            if (examEntity == null) return new ServiceResponse<ExamResponseDto>() {
                 StatusCode = HttpStatusCode.NotFound,
                 Message = "Exam not found"
             };
@@ -84,6 +91,66 @@ namespace ExamService.Services
             var serviceResponse = new ServiceResponse<List<ExamResponseDto>>();
             serviceResponse.Data = examReadDtoList;
             serviceResponse.Success = true;
+            return serviceResponse;
+        }
+
+        public ServiceResponse<List<ExamResponseDto>> GetExamsByAuthorEmail(string AuthorEmail)
+        {
+            var serviceResponse = new ServiceResponse<List<ExamResponseDto>>();
+            List<Exam> examList = _examRepository.GetAllExamsByAuthor(AuthorEmail);
+            if(examList == null){
+                serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                serviceResponse.Message = "No Exam was found";
+
+                return serviceResponse;
+            }
+
+            try{
+             
+                List<ExamResponseDto> examResponseDtoList = _mapper.Map<List<ExamResponseDto>>(examList);
+
+                serviceResponse.Success = true;
+                serviceResponse.Data = examResponseDtoList;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+
+            }catch(Exception ex){
+
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                serviceResponse.Message = ex.Message;
+            }         
+            
+            return serviceResponse;
+        }
+
+        
+
+        public ServiceResponse<List<ExamResponseDto>> GetExamsByTopicName(string topicName)
+        {
+            var serviceResponse = new ServiceResponse<List<ExamResponseDto>>();
+            if(!_topicRepository.ExistByName(topicName)){
+                serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                serviceResponse.Message = "Topic not found";
+
+                return serviceResponse;
+            }
+
+            try {
+                Topic topic = _topicRepository.GetByName(topicName);
+                Console.WriteLine(topic.Id);
+                List<Exam> examList = _examRepository.GetAllExamsByTopic(topic);
+                Console.WriteLine(examList.Count);
+                List<ExamResponseDto> examResponseDtoList = _mapper.Map<List<ExamResponseDto>>(examList);
+
+                serviceResponse.Success = true;
+                serviceResponse.Data = examResponseDtoList;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+
+            } catch(Exception ex){
+
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                serviceResponse.Message = ex.Message;
+            }         
+            
             return serviceResponse;
         }
 

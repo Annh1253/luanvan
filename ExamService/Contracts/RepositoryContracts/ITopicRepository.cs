@@ -19,5 +19,6 @@ namespace ExamService.Contracts.RepositoryContracts
         Topic GetByName(string name);
       
         bool Exist(int id);
+        bool ExistByName(string name);
     }
 }

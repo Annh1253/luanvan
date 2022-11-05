@@ -35,7 +35,7 @@ namespace UserService.Controllers
 
       
         [HttpGet]
-        [AuthorizeFilter(RoleType.Contestant)]
+        // [AuthorizeFilter(RoleType.Contestant)]
         public ActionResult GetUsers()
         {
 

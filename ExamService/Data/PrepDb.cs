@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ExamService.Models;
 
-namespace UserService.Data
+namespace ExamService.Data
 {
     public static class PrepDb
     {

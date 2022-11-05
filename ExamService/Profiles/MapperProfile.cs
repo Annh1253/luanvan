@@ -7,6 +7,7 @@ using ExamService.Dtos;
 using ExamService.Models;
 using ExamService.Response;
 
+
 namespace ExamService.Profiles
 {
     public class MapperProfile : Profile
@@ -45,6 +46,18 @@ namespace ExamService.Profiles
 
             CreateMap<ServiceResponse<OptionResponseDto>, ControllerResponse<OptionResponseDto>>();
             CreateMap<ServiceResponse<List<OptionResponseDto>>, ControllerResponse<List<OptionResponseDto>>>();
+
+            CreateMap<ServiceResponse<UserResponseDto>, ControllerResponse<UserResponseDto>>();
+            CreateMap<ServiceResponse<List<UserResponseDto>>, ControllerResponse<List<UserResponseDto>>>();
+
+            CreateMap<CredentialPublishedDto, UserRequestDto>();
+            
+            CreateMap<ExamResponseDto, ExamPublishedDto>()
+                .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.Id));
+            CreateMap<QuestionResponseDto, QuestionPublishedDto>()
+                .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.Id));
+            CreateMap<OptionResponseDto, OptionPublishedDto>()
+                .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.Id));    
         }
     }
 }

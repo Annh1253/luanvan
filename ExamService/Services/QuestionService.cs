@@ -10,7 +10,9 @@ using ExamService.Contracts.ServiceContracts;
 using ExamService.Dtos;
 using ExamService.Models;
 using ExamService.Response;
-using UserService.Data;
+using ExamService.Data;
+using ExamService.Helpers;
+using ExamService.Ultils;
 
 namespace ExamService.Services
 {
@@ -20,13 +22,15 @@ namespace ExamService.Services
         private readonly IQuestionRepository _questionRepository;
         private readonly IExamRepository _examRepository;
         private readonly IMapper _mapper;
+        private readonly IMessagePublisher _messagePublisher;
 
-        public QuestionService(DBContext dbContext, IQuestionRepository questionRepository, IExamRepository examRepository, IMapper mapper)
+        public QuestionService(DBContext dbContext, IQuestionRepository questionRepository, IExamRepository examRepository, IMapper mapper, IMessagePublisher messagePublisher)
         {
             this._dbContext = dbContext;
             this._questionRepository = questionRepository;
             this._examRepository = examRepository;
             this._mapper = mapper;
+            this._messagePublisher = messagePublisher;
         }
 
         public ServiceResponse<QuestionResponseDto> AddQuestion(int ExamId, QuestionRequestDto questionRequestDto)
@@ -54,6 +58,8 @@ namespace ExamService.Services
             }
 
             QuestionResponseDto questionResponseDto = _mapper.Map<QuestionResponseDto>(questionEntity);
+            
+            _messagePublisher.PublishQuestion(questionResponseDto, ExamId, EventType.NewQuestionCreate);
 
             return new ServiceResponse<QuestionResponseDto>()
             {

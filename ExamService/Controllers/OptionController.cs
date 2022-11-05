@@ -5,13 +5,16 @@ using System.Threading.Tasks;
 using AutoMapper;
 using ExamService.Contracts.ServiceContracts;
 using ExamService.Dtos;
+using ExamService.Filters;
 using ExamService.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExamService.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/examservice/[controller]")]
+    // [AuthenticateFilter]
+
     public class OptionController : ControllerBase
     {
          private readonly IOptionService _optionService;
@@ -26,6 +29,7 @@ namespace ExamService.Controllers
         [HttpGet]
         public IActionResult GetOptions()
         {
+            
             ServiceResponse<List<OptionResponseDto>> serviceResponse = _optionService.GetOptions();
             ControllerResponse<List<OptionResponseDto>> controllerResponse = _mapper.Map<ControllerResponse<List<OptionResponseDto>>>(serviceResponse);
             return StatusCode((int)serviceResponse.StatusCode, controllerResponse);

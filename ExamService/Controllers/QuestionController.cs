@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using ExamService.Contracts.ServiceContracts;
 using ExamService.Dtos;
+using ExamService.Filters;
 using ExamService.Response;
 using ExamService.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace ExamService.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/examservice/[controller]")]
+    // [AuthenticateFilter]
+
     public class QuestionController : ControllerBase
     {
         private readonly IQuestionService _questionService;

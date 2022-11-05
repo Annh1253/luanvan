@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ExamService.Contracts.RepositoryContracts;
 using ExamService.Models;
-using UserService.Data;
+using ExamService.Data;
 
 namespace ExamService.Repositories
 {
@@ -27,6 +27,11 @@ namespace ExamService.Repositories
         public bool Exist(int id)
         {
             return _dbContext.Topics.Any(r => r.Id == id);
+        }
+
+        public bool ExistByName(string name)
+        {
+            return _dbContext.Topics.Any(r => r.Name == name);
         }
 
         public List<Topic> GetAllTopics()

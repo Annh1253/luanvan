@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ExamService.Models;
 
-namespace UserService.Data
+namespace ExamService.Data
 {
     
     public class DBContext : DbContext

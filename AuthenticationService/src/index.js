@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -28,5 +29,12 @@ db.connect();
 route(app);
 
 app.listen(port || 6000, () => {
-  console.log("Backend server is running at port: " + port + "\n RabbitMQ server is running at : " + process.env.RABBITMQ_HOST_K8S + " : " + process.env.RABBITMQ_PORT_K8S);
+  console.log(
+    "Backend server is running at port: " +
+      port +
+      "\n RabbitMQ server is running at : " +
+      process.env.RABBITMQ_HOST_K8S +
+      " : " +
+      process.env.RABBITMQ_PORT_K8S
+  );
 });

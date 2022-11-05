@@ -21,6 +21,7 @@ namespace UserService.Middlewares
         public async Task Invoke(HttpContext context, IUserRepository userRepository)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            Console.WriteLine("Token: "  +token);
             context.Request.EnableBuffering();
             if (token != null)
                 attachUserToContext(context, userRepository, token);
