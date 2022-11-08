@@ -51,9 +51,13 @@ namespace ExamService.Repositories
         }
 
          public bool UpdateQuestion(int OldQuestionId , QuestionUpdateRequestDto newQuestion){
-            Question oldQuestion = _dbContext.Questions.First(e => e.Id == OldQuestionId);
-            CRUDHelper.CopyNoneNull(newQuestion, oldQuestion);
-            return SaveChanges();
+            try{
+                 Question oldQuestion = _dbContext.Questions.First(e => e.Id == OldQuestionId);
+                CRUDHelper.CopyNoneNull(newQuestion, oldQuestion);
+                return SaveChanges();
+            }catch(Exception ex){
+                throw ex;   
+            }
         }
 
         public bool RemoveQuestion(Question question)

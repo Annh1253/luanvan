@@ -10,5 +10,6 @@ namespace ExamService.Constants
         public const string CREATE =  "Create successful";
         public const string UPDATE =  "Update successful";
         public const string DELETE =  "Delete successful";
+        public const string UNCHANGE =  "Nothing change";
     }
 }

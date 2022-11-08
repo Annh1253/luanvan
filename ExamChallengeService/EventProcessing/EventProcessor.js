@@ -22,10 +22,20 @@ const addQuestion = (message) =>
         }
     }
 
-const deleteCredential = (message) => 
+    const updateQuestion = (message) =>
     {
         try{
-            ExamChallengeRepository.deleteCredential(message);
+            ExamChallengeRepository.updateQuestion(message);
+        }catch(err)
+        {
+            throw err
+        }
+    }
+
+const deleteQuestion = (message) => 
+    {
+        try{
+            ExamChallengeRepository.deleteQuestion(message);
         }catch(err)
         {
             throw err
@@ -44,16 +54,25 @@ class EventProcessor
                 console.log("process create exam event");
                 addExam(message)
                 break;
-            case EventType.UpdateExam:
-                console.log("process update exam event");  
-                 
+            case EventType.NewOptionCreate:
+                console.log("process create option event");  
+                updateQuestion(message)
                 break;
             case EventType.NewQuestionCreate:
                 console.log("process create question event");
                 addQuestion(message) 
                 break;
-            case EventType.NewOptionCreate:
-                console.log("process create option event");
+            case EventType.UpdateQuestion:
+                updateQuestion(message)
+                console.log("process udpate question event");
+                break;
+            case EventType.DeleteOption:
+                console.log("process delete option event");
+                updateQuestion(message)
+                break;
+            case EventType.DeleteQuestion:
+                console.log("process delete question event");
+                deleteQuestion(message)
                 break;
             default:
                 console.log("undefined event");

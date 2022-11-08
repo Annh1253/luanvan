@@ -12,6 +12,7 @@ namespace ExamService.Helpers
     {
         bool PublishExam(ExamResponseDto examResponseDto, EventType eventType);
         bool PublishQuestion(QuestionResponseDto questionResponseDto, int examId, EventType eventType);
+        bool PublishQuestion(QuestionResponseDto optionResponseDto, EventType eventType);
 
     }
 }

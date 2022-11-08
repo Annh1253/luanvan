@@ -8,8 +8,10 @@ using ExamService.Constants;
 using ExamService.Contracts.RepositoryContracts;
 using ExamService.Contracts.ServiceContracts;
 using ExamService.Dtos;
+using ExamService.Helpers;
 using ExamService.Models;
 using ExamService.Response;
+using ExamService.Ultils;
 
 namespace ExamService.Services
 {
@@ -18,12 +20,14 @@ namespace ExamService.Services
         private readonly IOptionRepository _optionRepository;
         private readonly IQuestionRepository _questionRepository;
         private readonly IMapper _mapper;
+        private readonly IMessagePublisher _messagePublisher;
 
-        public OptionService(IOptionRepository optionRepository, IQuestionRepository questionRepository, IMapper mapper)
+        public OptionService(IOptionRepository optionRepository, IQuestionRepository questionRepository, IMapper mapper, IMessagePublisher messagePublisher)
         {
             this._optionRepository = optionRepository;
             this._questionRepository = questionRepository;
             this._mapper = mapper;
+            this._messagePublisher = messagePublisher;
         }
         public ServiceResponse<OptionResponseDto> AddOption(int QuestionId, OptionRequestDto optionRequestDto)
         {
@@ -39,14 +43,29 @@ namespace ExamService.Services
             Option optionEntity = _mapper.Map<Option>(optionRequestDto);
             Question questionEntity = _questionRepository.GetById(QuestionId);
             optionEntity.Question = questionEntity;
-            bool isSucceed = _optionRepository.AddOption(optionEntity);
-            if(!isSucceed)
-            {
-                return new ServiceResponse<OptionResponseDto>()
+            try{
+                bool isChanged = _optionRepository.AddOption(optionEntity);
+                if(!isChanged)
                 {
-                    Message = ErrorMessage.CREATE,
-                    StatusCode = HttpStatusCode.InternalServerError
-                };
+                    
+                    return new ServiceResponse<OptionResponseDto>()
+                    {
+                        Message = SuccessMessage.UNCHANGE,
+                        StatusCode = HttpStatusCode.OK
+                    };
+                }
+            }catch(Exception ex){
+                return new ServiceResponse<OptionResponseDto>()
+                    {
+                        Message = ex.Message,
+                        StatusCode = HttpStatusCode.InternalServerError
+                    };
+            }
+            if(optionRequestDto.IsCorrect)
+            {
+                Question question = _questionRepository.GetById(QuestionId);
+                QuestionResponseDto questionResponseDto = _mapper.Map<QuestionResponseDto>(question);
+                _messagePublisher.PublishQuestion(questionResponseDto, EventType.NewOptionCreate);
             }
             return new ServiceResponse<OptionResponseDto>()
             {
@@ -107,6 +126,11 @@ namespace ExamService.Services
                 };
            }
             Option optionToDelete = _optionRepository.GetById(id);
+            Option optionHolder = new Option(){
+                Id = optionToDelete.Id,
+                Question = optionToDelete.Question,
+                IsCorrect = optionToDelete.IsCorrect
+            };
             bool isSucceed = _optionRepository.RemoveOption(optionToDelete);
             if(!isSucceed)
             {
@@ -115,6 +139,12 @@ namespace ExamService.Services
                     Message = ErrorMessage.DELETE,
                     StatusCode = HttpStatusCode.InternalServerError
                 };
+            }
+            if(optionHolder.IsCorrect)
+            {
+                Question question = optionHolder.Question;
+                QuestionResponseDto questionResponseDto = _mapper.Map<QuestionResponseDto>(question);
+                _messagePublisher.PublishQuestion(questionResponseDto, EventType.DeleteOption);
             }
             return new ServiceResponse<OptionResponseDto>()
             {

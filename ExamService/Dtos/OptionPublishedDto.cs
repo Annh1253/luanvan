@@ -8,6 +8,8 @@ namespace ExamService.Dtos
     public class OptionPublishedDto
     {
         public int ExternalId { get; set; }
-        public bool IsCorrect { get; set; }
+        public int ExternalQuestionId { get; set; }
+      
+        public string Event  { get; set; }
     }
 }

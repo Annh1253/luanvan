@@ -10,5 +10,6 @@ namespace ExamService.AsyncDataServices
     {
         void PublishExam(ExamPublishedDto examPublishedDto);
         void PublishQuestion(QuestionPublishedDto questionPublishedDto);
+        void PublishOption(OptionPublishedDto optionPublishedDto);
     }
 }

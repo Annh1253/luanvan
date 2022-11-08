@@ -21,14 +21,16 @@ namespace ExamService.Services
         private readonly DBContext _dbContext;
         private readonly IQuestionRepository _questionRepository;
         private readonly IExamRepository _examRepository;
+        private readonly IOptionRepository _optionRepository;
         private readonly IMapper _mapper;
         private readonly IMessagePublisher _messagePublisher;
 
-        public QuestionService(DBContext dbContext, IQuestionRepository questionRepository, IExamRepository examRepository, IMapper mapper, IMessagePublisher messagePublisher)
+        public QuestionService(DBContext dbContext, IQuestionRepository questionRepository, IExamRepository examRepository, IOptionRepository optionRepository, IMapper mapper, IMessagePublisher messagePublisher)
         {
             this._dbContext = dbContext;
             this._questionRepository = questionRepository;
             this._examRepository = examRepository;
+            this._optionRepository = optionRepository;
             this._mapper = mapper;
             this._messagePublisher = messagePublisher;
         }
@@ -112,6 +114,11 @@ namespace ExamService.Services
            }
 
             Question questionToDelete = _questionRepository.GetById(id);
+            Question questionHolder = new Question(){
+                Id = questionToDelete.Id,
+                Exam = questionToDelete.Exam,
+                Content = questionToDelete.Content
+            };
             bool isSuceeded = _questionRepository.RemoveQuestion(questionToDelete);
             if(!isSuceeded)
             {
@@ -122,7 +129,8 @@ namespace ExamService.Services
                 };
             }
 
-            QuestionResponseDto questionResponseDto = _mapper.Map<QuestionResponseDto>(questionToDelete);
+            QuestionResponseDto questionResponseDto = _mapper.Map<QuestionResponseDto>(questionHolder);
+            _messagePublisher.PublishQuestion(questionResponseDto, questionHolder.Exam.Id, EventType.DeleteQuestion);
             return new ServiceResponse<QuestionResponseDto>() 
             { 
                 Data = questionResponseDto,
@@ -144,14 +152,43 @@ namespace ExamService.Services
                 };
             }
 
-            bool isSucceed = _questionRepository.UpdateQuestion(oldQuestionId, QuestionRequestDto);
-            if(!isSucceed)
-            {
-                return new ServiceResponse<QuestionResponseDto>()
+
+            try{
+                bool isAnyOptionChanged = false;
+                if(QuestionRequestDto.optionList != null)
                 {
-                    Message = ErrorMessage.UPDATE,
-                    StatusCode = HttpStatusCode.InternalServerError
-                };
+                    foreach(OptionUpdateRequestDto optionDto in QuestionRequestDto.optionList)
+                    {
+                        bool isOptionChanged = _optionRepository.UpdateOption(optionDto.Id, optionDto);
+                        //Send update correct option message 
+                         if(isOptionChanged && optionDto.IsCorrect == true){
+                            Question updatedQuestion = _questionRepository.GetById(oldQuestionId);
+                            int ExamId = updatedQuestion.Exam.Id;
+                            QuestionResponseDto questionResponseDto = _mapper.Map<QuestionResponseDto>(updatedQuestion);
+                            _messagePublisher.PublishQuestion(questionResponseDto, ExamId, EventType.UpdateQuestion);
+                        }
+                        if(!isAnyOptionChanged){
+                            isAnyOptionChanged = isOptionChanged;
+                        }
+                    }
+
+                }
+
+                bool isChanged = _questionRepository.UpdateQuestion(oldQuestionId, QuestionRequestDto);
+                if(!(isChanged || isAnyOptionChanged))
+                {
+                    return new ServiceResponse<QuestionResponseDto>()
+                    {
+                        Message = SuccessMessage.UNCHANGE,
+                        StatusCode = HttpStatusCode.OK
+                    };
+                }
+            }catch(Exception ex){
+                return new ServiceResponse<QuestionResponseDto>()
+                    {
+                        Message = ex.Message,
+                        StatusCode = HttpStatusCode.InternalServerError
+                    };
             }
 
             return new ServiceResponse<QuestionResponseDto>()

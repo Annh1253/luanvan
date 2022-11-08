@@ -8,7 +8,7 @@ namespace ExamService.Dtos
     public class QuestionPublishedDto
     {
         public int ExternalId { get; set; }
-        public int ExternalExamId { get; set; }
+        public int ExternalExamId { get; set; } = default;
         public int ExternalCorrectAnswerId { get; set; }
 
         public string Event  { get; set; }

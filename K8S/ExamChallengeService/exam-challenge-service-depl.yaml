@@ -1,0 +1,32 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exam-challenge-service-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: exam-challenge-service
+  template:
+    metadata:
+      labels:
+        app: exam-challenge-service
+    spec:
+      containers:
+      - name: exam-challenge-service
+        image: just4codee/examchallengeservice
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: exam-challenge-service-clusterip-service
+spec:
+  selector:
+    app: exam-challenge-service
+  ports:
+  - name: exam-challenge-service
+    port: 3001
+    targetPort: 3001
+
+

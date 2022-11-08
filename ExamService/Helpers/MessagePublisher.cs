@@ -40,6 +40,8 @@ namespace ExamService.Helpers
            return true;
         }
 
+       
+
         public bool PublishQuestion(QuestionResponseDto questionResponseDto, int examId, EventType eventType)
         {
             try
@@ -56,6 +58,33 @@ namespace ExamService.Helpers
                QuestionPublishedDto questionPublishedDto = new QuestionPublishedDto(){
                     ExternalId = questionResponseDto.Id,
                     ExternalExamId = examId,
+                    ExternalCorrectAnswerId = correctOptionId,
+                    Event = EventGenerator.generateEvent(eventType)
+               };
+               _messageBusClient.PublishQuestion(questionPublishedDto);
+          }
+           catch(Exception e)
+           {
+                throw e;
+           }
+           return true;
+        }
+
+        public bool PublishQuestion(QuestionResponseDto questionResponseDto, EventType eventType)
+        {
+             try
+           {  
+                int correctOptionId = -1;
+                foreach(OptionResponseDto option in questionResponseDto.Options)
+                {
+                    if(option.IsCorrect)
+                    {
+                        correctOptionId = option.Id;
+                        break;
+                    }
+                }
+               QuestionPublishedDto questionPublishedDto = new QuestionPublishedDto(){
+                    ExternalId = questionResponseDto.Id,
                     ExternalCorrectAnswerId = correctOptionId,
                     Event = EventGenerator.generateEvent(eventType)
                };

@@ -22,8 +22,12 @@ namespace ExamService.Repositories
         public bool AddOption(Option option)
         {
             Console.WriteLine("Saving option");
-            _dbContext.Options.Add(option);
-            return SaveChanges();
+            try{
+                _dbContext.Options.Add(option);
+                return SaveChanges();
+            }catch(Exception ex){
+                throw ex;
+            }
         }
 
         public bool Exist(int id)
@@ -47,7 +51,7 @@ namespace ExamService.Repositories
                 _dbContext.Options.Remove(question);
             }catch(Exception ex)
             {
-                return false;
+                throw ex;
             }
 
             return SaveChanges();
@@ -61,7 +65,7 @@ namespace ExamService.Repositories
 
             }catch(Exception ex)
             {
-                return false;
+                throw ex;
             }
 
             return SaveChanges();

@@ -74,6 +74,23 @@ namespace ExamService.AsyncDataServices
             }
         }
 
+         public void PublishOption(OptionPublishedDto optionPublishedDto)
+        {
+            var message = JsonSerializer.Serialize(optionPublishedDto);
+            if(_connection.IsOpen)
+            {
+
+                Console.WriteLine("---> RabbitMQ connection is OPEN, sending Message...");
+                SendMessage(message);
+                //To do send message
+            }
+            else
+            {
+                Console.WriteLine("---> RabbitMQ connection is CLOSE, not sending");
+
+            }
+        }
+
         private void SendMessage(string message)
         {
             var body = Encoding.UTF8.GetBytes(message);
