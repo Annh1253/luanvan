@@ -11,6 +11,6 @@ namespace ExamService.Dtos
 
         public double? Score { get; set; }
 
-        public List<OptionUpdateRequestDto>? optionList {get; set;}
+        public List<OptionUpdateRequestDto>? options {get; set;}
     }
 }

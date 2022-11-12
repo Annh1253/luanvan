@@ -55,6 +55,14 @@ class ExamChallengeRepository {
       });
   }
 
+  async getExamOfQuestion(questionId) {
+    const question = await Question.findOne({ externalId: questionId });
+    const exam = await Exam.findOne({
+      "questions.questionId": question._id.valueOf(),
+    });
+    return exam;
+  }
+
   async saveOption(option) {}
 
   async updateQuestion(question) {
@@ -66,20 +74,6 @@ class ExamChallengeRepository {
     const questionToUpdate = Question.findOneAndUpdate(filter, update)
       .then(async (data) => {
         console.log("Save successfully: ", data);
-        // let exam = await Exam.findOne({
-        //     externalId: question.ExternalExamId
-        // })
-        // if(exam == null)
-        // {
-        //     console.log("Exam not found: ", question.ExternalExamId);
-        //     return "Not found exam";
-        // }else{
-        //     exam.questions.push({
-        //         questionId: data._id
-        //     })
-        //     exam.save()
-        // }
-
         return data;
       })
       .catch((err) => {
@@ -90,21 +84,20 @@ class ExamChallengeRepository {
   async deleteQuestion(question) {
     console.log("Updating question : ", question);
     const filter = { externalId: question.ExternalId };
-    
+
     const questionToUpdate = Question.findOneAndDelete(filter)
       .then(async (data) => {
         console.log("Save successfully: ", data);
-        let exam = await Exam.findOne({externalId: question.ExternalExamId})
-        let indexToDelete = -1
+        let exam = await Exam.findOne({ externalId: question.ExternalExamId });
+        let indexToDelete = -1;
         exam.questions.forEach((question, index) => {
-            if(data._id.valueOf() == question.questionId)
-            {
-                indexToDelete = index
-            }
-        })
-        exam.questions.splice(indexToDelete,1)
-  
-        await exam.save()
+          if (data._id.valueOf() == question.questionId) {
+            indexToDelete = index;
+          }
+        });
+        exam.questions.splice(indexToDelete, 1);
+
+        await exam.save();
       })
       .catch((err) => {
         throw err;

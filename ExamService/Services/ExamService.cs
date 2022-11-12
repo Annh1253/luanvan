@@ -84,9 +84,24 @@ namespace ExamService.Services
             return serviceResponse;
         }
 
-        public ServiceResponse<List<ExamResponseDto>> GetExams()
+        public ServiceResponse<List<ExamResponseDto>> GetExams(ExamFilterDto examFilter)
         {
-            List<Exam> examList = _examRepository.GetAllExams();
+            List<Exam> examList = new List<Exam>();
+            if(examFilter.hasQuestion)
+            {
+                examList = _examRepository.GetAllExams();
+            }else{
+                Console.WriteLine("Fetching null question exam....");
+                examList = _examRepository.GetAllExamsWithNoQuestion();
+            }
+
+            foreach(Exam exam in examList)
+            {
+                foreach(Question question in exam.Questions)
+                {
+                    question.Options.Sort((a,b)=> a.Id.CompareTo(b.Id));
+                }
+            }
             List<ExamResponseDto> examReadDtoList = _mapper.Map<List<ExamResponseDto>>(examList);
             var serviceResponse = new ServiceResponse<List<ExamResponseDto>>();
             serviceResponse.Data = examReadDtoList;
@@ -152,6 +167,11 @@ namespace ExamService.Services
             }         
             
             return serviceResponse;
+        }
+
+        public ServiceResponse<List<ExamResponseDto>> GetExamsWithNoQuestion()
+        {
+            throw new NotImplementedException();
         }
 
         public ServiceResponse<ExamResponseDto> RemoveExam(int ExamId)

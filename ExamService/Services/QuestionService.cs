@@ -155,9 +155,9 @@ namespace ExamService.Services
 
             try{
                 bool isAnyOptionChanged = false;
-                if(QuestionRequestDto.optionList != null)
+                if(QuestionRequestDto.options != null)
                 {
-                    foreach(OptionUpdateRequestDto optionDto in QuestionRequestDto.optionList)
+                    foreach(OptionUpdateRequestDto optionDto in QuestionRequestDto.options)
                     {
                         bool isOptionChanged = _optionRepository.UpdateOption(optionDto.Id, optionDto);
                         //Send update correct option message 
@@ -174,7 +174,12 @@ namespace ExamService.Services
 
                 }
 
-                bool isChanged = _questionRepository.UpdateQuestion(oldQuestionId, QuestionRequestDto);
+                QuestionUpdateRequestDto newQuestionUpdateDto = new QuestionUpdateRequestDto(){
+                    Content = QuestionRequestDto.Content,
+                    Score = QuestionRequestDto.Score
+                };
+
+                bool isChanged = _questionRepository.UpdateQuestion(oldQuestionId, newQuestionUpdateDto);
                 if(!(isChanged || isAnyOptionChanged))
                 {
                     return new ServiceResponse<QuestionResponseDto>()

@@ -10,6 +10,8 @@ namespace ExamService.Contracts.RepositoryContracts
     public interface IExamRepository
     {
         List<Exam> GetAllExams();
+        List<Exam> GetAllExamsWithNoQuestion();
+
         List<Exam> GetAllExamsByTopic(Topic topic);
         List<Exam> GetAllExamsByAuthor(String AuthorEmail);
 

@@ -32,7 +32,7 @@ namespace ExamService.Repositories
 
         public List<Exam> GetAllExams()
         {
-            List<Exam> examList = _dbContext.Exams.ToList();
+            List<Exam> examList = _dbContext.Exams.Where(exam => exam.Questions.Count() > 0).ToList();
             return examList;
         }
 
@@ -77,6 +77,12 @@ namespace ExamService.Repositories
         public List<Exam> GetAllExamsByAuthor(string AuthorEmail)
         {
             return this._dbContext.Exams.Where(exam => exam.AuthorEmail == AuthorEmail).ToList();
+        }
+
+        public List<Exam> GetAllExamsWithNoQuestion()
+        {
+            List<Exam> examList = _dbContext.Exams.Where(exam => exam.Questions.Count() == 0).ToList();
+            return examList;
         }
     }
 }

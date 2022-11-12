@@ -9,7 +9,8 @@ namespace ExamService.Contracts.ServiceContracts
 {
     public interface IExamService
     {
-        ServiceResponse<List<ExamResponseDto>> GetExams();
+        ServiceResponse<List<ExamResponseDto>> GetExams(ExamFilterDto examFilter);
+        ServiceResponse<List<ExamResponseDto>> GetExamsWithNoQuestion();
         ServiceResponse<List<ExamResponseDto>> GetExamsByTopicName(string topicName);
         ServiceResponse<List<ExamResponseDto>> GetExamsByAuthorEmail(string AuthorEmail);
 

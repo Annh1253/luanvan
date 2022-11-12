@@ -5,8 +5,8 @@ const examChallengeServiceExchange = "ExamChallengeServiceExchange";
 class MessagePublisher {
   publishMessage(message) {
     amqp.connect(
-      `amqp://${process.env.RABBITMQ_HOST_K8S}:${process.env.RABBITMQ_PORT_K8S}`,
-      // `amqp://${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`,
+      // `amqp://${process.env.RABBITMQ_HOST_K8S}:${process.env.RABBITMQ_PORT_K8S}`,
+      `amqp://${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`,
       function (error0, connection) {
         if (error0) {
           throw error0;
