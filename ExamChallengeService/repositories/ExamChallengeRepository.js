@@ -30,6 +30,7 @@ class ExamChallengeRepository {
     const newQuestion = new Question({
       externalId: question.ExternalId,
       externalCorrectOptionId: question.ExternalCorrectAnswerId,
+      score: question.Score
     });
     newQuestion
       .save()
@@ -61,6 +62,29 @@ class ExamChallengeRepository {
       "questions.questionId": question._id.valueOf(),
     });
     return exam;
+  }
+
+  async loadAllQuestionsOfExam(examId) {
+    const exam = await Exam.findOne({ externalId: examId });
+    const questions = [];
+
+    for (let i = 0; i < exam.questions.length; i++) {
+      let question = await Question.findById(exam.questions[i].questionId);
+      if (question != null) {
+        questions.push({
+          questionId: question.externalId,
+          correctAnswer: question.externalCorrectOptionId,
+          score: question.score ? question.score : 0,
+        });
+      }
+    }
+    return questions;
+
+    // exam.questions.forEach(async (question) => {
+    //  Question.findById(question.questionId).then((data) => {
+    //     questions.push(data);
+    //   }).finally(()=>questions);
+    // });
   }
 
   async saveOption(option) {}

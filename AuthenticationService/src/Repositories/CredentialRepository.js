@@ -107,5 +107,3 @@ class CredentialRepository {
       });
   }
 }
-
-module.exports = new CredentialRepository();

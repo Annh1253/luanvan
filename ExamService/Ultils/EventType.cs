@@ -12,6 +12,7 @@ namespace ExamService.Ultils
         DeleteOption,
         UpdateOption,
         NewCredentialRegisted,
-        Undetermined
+        Undetermined,
+        ExamDone
     }
 }

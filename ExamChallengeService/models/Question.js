@@ -2,7 +2,8 @@ const mongoose = require('mongoose')
 const questionSchema = new mongoose.Schema(
     {
         externalId: {type: Number},
-        externalCorrectOptionId: {type: Number}
+        externalCorrectOptionId: {type: Number},
+        score: {type: Number}
     },
     {
         timestamps: true

@@ -59,6 +59,7 @@ namespace ExamService.Helpers
                     ExternalId = questionResponseDto.Id,
                     ExternalExamId = examId,
                     ExternalCorrectAnswerId = correctOptionId,
+                    Score = questionResponseDto.Score,
                     Event = EventGenerator.generateEvent(eventType)
                };
                _messageBusClient.PublishQuestion(questionPublishedDto);
@@ -86,6 +87,7 @@ namespace ExamService.Helpers
                QuestionPublishedDto questionPublishedDto = new QuestionPublishedDto(){
                     ExternalId = questionResponseDto.Id,
                     ExternalCorrectAnswerId = correctOptionId,
+                    Score = questionResponseDto.Score,
                     Event = EventGenerator.generateEvent(eventType)
                };
                _messageBusClient.PublishQuestion(questionPublishedDto);

@@ -52,6 +52,7 @@ class EventProcessor
         {
             case EventType.NewExamCreate:
                 console.log("process create exam event");
+                console.log(message);
                 addExam(message)
                 break;
             case EventType.NewOptionCreate:
@@ -60,10 +61,12 @@ class EventProcessor
                 break;
             case EventType.NewQuestionCreate:
                 console.log("process create question event");
+                console.log(message);
                 addQuestion(message) 
                 break;
             case EventType.UpdateQuestion:
                 updateQuestion(message)
+                console.log(message);
                 console.log("process udpate question event");
                 break;
             case EventType.DeleteOption:

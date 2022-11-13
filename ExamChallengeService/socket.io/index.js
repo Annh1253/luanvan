@@ -1,6 +1,7 @@
 const repo = require("../repositories/ExamChallengeRepository");
 const socketio = require("socket.io");
 const serverName = "ExamServer";
+const messagePublisher = require("../AsyncDataService/MessageBusClient");
 
 const formatMessage = require("../utils/message");
 const {
@@ -11,9 +12,11 @@ const {
 } = require("../utils/user");
 
 const Question = require("../utils/question");
+const EventType = require("../EventProcessing/EventType");
 const questions = new Question();
 
 const RecieveEventType = {
+  CREATE_ROOM: "create-room",
   USER_CONNECT: "connection",
   USER_CHOOSE_OPTION: "user-choose-option",
   USER_DISCONNECT: "disconnect",
@@ -41,10 +44,20 @@ class SocketIO {
 
     //
     io.on(RecieveEventType.USER_CONNECT, function (socket) {
-      socket.on(RecieveEventType.USER_JOIN_ROOM, ({ username, room }) => {
-        console.log("Someone connect");
-        const user = userJoin(socket.id, username, room);
+      socket.on(RecieveEventType.CREATE_ROOM, async ({ username, room }) => {
+        console.log("Getting question");
 
+        const questionList = await repo.loadAllQuestionsOfExam(room);
+        questions.questions = questionList;
+        console.log(questions.questions);
+        socket.emit("create-room-success", { roomId: username + room });
+      });
+
+      socket.on(RecieveEventType.USER_JOIN_ROOM, async ({ username, roomId }) => {
+        console.log("Someone connect");
+
+        const user = userJoin(socket.id, username, roomId);
+        console.log(username, roomId);
         socket.join(user.room);
 
         io.to(user.room).emit(RecieveEventType.SERVER_UPDATE_USER, {
@@ -65,6 +78,7 @@ class SocketIO {
           );
 
         socket.on(RecieveEventType.USER_CHOOSE_OPTION, (message) => {
+          console.log(message);
           const user = getCurrentUser(socket.id);
           user.answers.push({
             questionId: message.questionId,
@@ -93,20 +107,23 @@ class SocketIO {
         socket.on(RecieveEventType.SUBMIT_TEST, async function () {
           const user = getCurrentUser(socket.id);
           const exam = await repo.getExamOfQuestion(user.answers[0].questionId);
-          const payload = {
-            externalExamId: exam.externalId,
-            attemps: [],
+          let payload = {
+            ExternalExamId: exam.externalId,
+            Attemps: [],
+            Event: EventType.ExamDone
           };
           const users = getRoomUsers(getCurrentUser(socket.id).room);
           for (let user1 of users) {
-            payload.attemps.push({
+            payload.Attemps.push({
               user: user1.username,
               score: user1.score,
               answers: user1.answers,
             });
             user1.score = 0;
           }
-          console.log(payload.attemps[0].answers);
+          console.log(payload);
+          console.log(payload.Attemps[0].answers);
+          messagePublisher.publishMessage(payload);
         });
 
         socket.on(RecieveEventType.USER_SEND_MESSAGE, function (message) {

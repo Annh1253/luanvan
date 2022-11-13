@@ -9,13 +9,13 @@ class Question {
 
   findQuestionById(questionId) {
     return this.questions.find(
-      (question) => question.questionId === questionId
+      (question) => question.questionId == questionId
     );
   }
 
   checkAnswer(questionId, answer) {
     const question = this.findQuestionById(questionId);
-    return question.correctAnswer === answer;
+    return question.correctAnswer == answer;
   }
 }
 

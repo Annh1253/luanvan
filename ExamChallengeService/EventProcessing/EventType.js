@@ -1,4 +1,5 @@
 const EventType = {
+    ExamDone: "ExamDone",
     NewExamCreate: "NewExamCreate",
     DeleteExam: "DeleteExam",
     UpdateExam: "UpdateExam",

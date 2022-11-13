@@ -4,8 +4,7 @@ using System.Text.Json;
 using ExamService.Models;
 using ExamService.Ultils;
 using ExamService.Contracts.RepositoryContracts;
-using ExamService.EventProcessing;
-using ExamService.Dtos;
+
 
 namespace ExamService.EventProcessing
 {
@@ -28,6 +27,9 @@ namespace ExamService.EventProcessing
                 case "NewCredentialRegisted":
                     Console.WriteLine("---> New Credential Published Event Detected");
                     return EventType.NewCredentialRegisted;
+                case "ExamDone":
+                    Console.WriteLine("---> New Exam Done Published Event Detected");
+                    return EventType.ExamDone;
                 default:
                     Console.WriteLine("---> Unknown Event");
                     return EventType.Undetermined;
@@ -53,6 +55,11 @@ namespace ExamService.EventProcessing
             {
                 case EventType.NewCredentialRegisted:
                     AddUser(message);
+                    break;
+                case EventType.ExamDone:
+                    Console.WriteLine("Processing new exam done...");
+                    Console.WriteLine("Data: " + message);
+
                     break;
                 default:
                     break;

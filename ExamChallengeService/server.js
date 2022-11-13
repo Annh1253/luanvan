@@ -9,7 +9,7 @@ const route = require("./routes");
 const port = 3005;
 const cors = require("cors");
 const EventType = require("./EventProcessing/EventType")
-// const messageBusSubscriber = require("./AsyncDataService/MessageBusSubscriber.js");
+const messageBusSubscriber = require("./AsyncDataService/MessageBusSubscriber.js");
 
 console.log("Event: " + EventType.NewExamCreate);
 app.use(
