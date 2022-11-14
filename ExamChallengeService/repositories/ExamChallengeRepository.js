@@ -94,6 +94,7 @@ class ExamChallengeRepository {
     const filter = { externalId: question.ExternalId };
     const update = {
       externalCorrectOptionId: question.ExternalCorrectAnswerId,
+      score: question.Score
     };
     const questionToUpdate = Question.findOneAndUpdate(filter, update)
       .then(async (data) => {

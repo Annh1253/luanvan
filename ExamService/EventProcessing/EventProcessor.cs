@@ -4,7 +4,10 @@ using System.Text.Json;
 using ExamService.Models;
 using ExamService.Ultils;
 using ExamService.Contracts.RepositoryContracts;
-
+using ExamService.Dtos.ExamDone;
+using ExamService.Contracts.ServiceContracts;
+using ExamService.Response;
+using ExamService.Dtos.Answer;
 
 namespace ExamService.EventProcessing
 {
@@ -21,7 +24,7 @@ namespace ExamService.EventProcessing
         {
             Console.WriteLine("---> Determine Event");
             var eventType = JsonSerializer.Deserialize<GenericEventDto>(notificationMessage);
-            Console.WriteLine("---> Event is: "+eventType.Event);
+            Console.WriteLine("---> Event is: " + eventType.Event);
             switch(eventType.Event)
             {
                 case "NewCredentialRegisted":
@@ -54,12 +57,14 @@ namespace ExamService.EventProcessing
             switch(eventType)
             {
                 case EventType.NewCredentialRegisted:
+                    Console.WriteLine("Processing new credential create...");
+                    Console.WriteLine("Data: " + message);
                     AddUser(message);
                     break;
                 case EventType.ExamDone:
                     Console.WriteLine("Processing new exam done...");
                     Console.WriteLine("Data: " + message);
-
+                    proccessNewExamDone(message);
                     break;
                 default:
                     break;
@@ -89,6 +94,59 @@ namespace ExamService.EventProcessing
                 catch(Exception ex)
                 {
                     Console.WriteLine($"---> Could not add User to DB: {ex.Message}");
+                }
+            }
+        }
+
+        private void proccessNewExamDone(string message){            
+            using(var scope = _scopeFactory.CreateScope())
+            {
+                try
+                {
+                    var service = scope.ServiceProvider.GetRequiredService<IAttempService>();
+                    var examDoneDto = JsonSerializer.Deserialize<ExamDoneDto>(message);
+
+                    Console.WriteLine(examDoneDto.ToString());
+                    List<AttempRequestDto> attempList = new List<AttempRequestDto>();
+
+                    foreach( var attemp in examDoneDto.Attemps )
+                    {
+                        
+                       
+                        AttempRequestDto attempRequest = new AttempRequestDto()
+                        {
+                            TotalScore = attemp.score,
+                            Email = attemp.user,
+                            ExamId = examDoneDto.ExternalExamId
+                        };
+
+                        foreach(var answer in attemp.answers)
+                        {
+                            AnswerRequestDto answerRequestDto = new AnswerRequestDto()
+                            {
+                                OptionId = answer.optionId,
+                                QuestionId = answer.questionId
+                            };
+                            attempRequest.Answers.Add(answerRequestDto);
+                        }
+                  
+                        attempList.Add(attempRequest);
+                    }
+                    ServiceResponse<AttempResponseDto> response = service.AddAttemps(attempList);
+                    Console.WriteLine(response.Message);
+                    // var AttempRequestDto = _mapper.Map<AttempRequestDto>(examDoneDto);
+                    // var userEntity = _mapper.Map<User>(userDtoRequest);
+                   
+                    // bool SavedSucceeded = _userRepository.AddUser(userEntity); 
+                    // if(!SavedSucceeded)
+                    // {
+                    //     throw new InvalidOperationException();
+                    // }
+                    // Console.WriteLine("Save new attemps Successfully");
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine($"---> Could not add Attemps to DB: {ex.Message}");
                 }
             }
         }

@@ -13,6 +13,8 @@ namespace ExamService.Contracts.RepositoryContracts
 
         User GetById(int id);
 
+         User GetByEmail(string Email);
+
         bool AddUser(User user);
         public bool UpdateUser(int OldUserId , UserRequestDto newUser);
         public bool RemoveUser(User user);

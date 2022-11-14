@@ -39,6 +39,7 @@ builder.Services.AddScoped<IExamService, ExamsService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IOptionService, OptionService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAttempService, AttempService>();
 
 
 
@@ -50,6 +51,10 @@ builder.Services.AddScoped<IExamRepository, ExamRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
 builder.Services.AddScoped<IOptionRepository, OptionRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAttempRepository, AttempRepository>();
+builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
+
+
 
 
 // Add message bus util

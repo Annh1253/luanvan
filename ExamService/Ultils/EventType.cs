@@ -1,7 +1,8 @@
 namespace ExamService.Ultils
 {
     public enum EventType
-    {      
+    {     
+        UpdateQuestionScore, 
         NewExamCreate,
         DeleteExam,
         UpdateExam,

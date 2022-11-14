@@ -11,6 +11,10 @@ namespace ExamService.Ultils
         {
             switch(eventType)
             {
+                case EventType.ExamDone:
+                    return "ExamDone";
+                case EventType.UpdateQuestionScore:
+                    return "UpdateQuestionScore";
                 case EventType.NewExamCreate:
                     return "NewExamCreate";
                 case EventType.DeleteExam:

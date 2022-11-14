@@ -26,6 +26,8 @@ namespace ExamService.Data
 
         public DbSet<Exam> Exams { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Answer> Answers { get; set; }
+
       
     }
 }

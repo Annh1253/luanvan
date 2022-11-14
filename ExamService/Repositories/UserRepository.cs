@@ -72,5 +72,10 @@ namespace ExamService.Repositories
         {
             return _dbContext.Users.Any(u => u.Email == email);
         }
+
+        public User GetByEmail(string Email)
+        {
+            return _dbContext.Users.FirstOrDefault(u => u.Email == Email);
+        }
     }
 }

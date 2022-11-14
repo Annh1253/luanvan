@@ -2,6 +2,7 @@
 using ExamService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExamService.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20221114091747_AddAnswerTable")]
+    partial class AddAnswerTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,7 +196,7 @@ namespace ExamService.Migrations
             modelBuilder.Entity("ExamService.Models.Answer", b =>
                 {
                     b.HasOne("ExamService.Models.Attemp", "Attemp")
-                        .WithMany("Answers")
+                        .WithMany()
                         .HasForeignKey("AttempId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -268,11 +270,6 @@ namespace ExamService.Migrations
                         .IsRequired();
 
                     b.Navigation("Exam");
-                });
-
-            modelBuilder.Entity("ExamService.Models.Attemp", b =>
-                {
-                    b.Navigation("Answers");
                 });
 
             modelBuilder.Entity("ExamService.Models.Exam", b =>

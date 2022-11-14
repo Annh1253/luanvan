@@ -50,6 +50,8 @@ namespace ExamService.Profiles
             CreateMap<ServiceResponse<UserResponseDto>, ControllerResponse<UserResponseDto>>();
             CreateMap<ServiceResponse<List<UserResponseDto>>, ControllerResponse<List<UserResponseDto>>>();
 
+            CreateMap<ServiceResponse<List<AttempResponseDto>>, ControllerResponse<List<AttempResponseDto>>>();
+
             CreateMap<CredentialPublishedDto, UserRequestDto>();
             
             CreateMap<ExamResponseDto, ExamPublishedDto>()

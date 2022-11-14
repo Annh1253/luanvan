@@ -16,6 +16,9 @@ namespace ExamService.Models
 
         public User _user = new User();
 
+        public List<Answer> _answers = new List<Answer>();
+
+
         
         protected ILazyLoader LazyLoader { get; set; }
 
@@ -30,6 +33,12 @@ namespace ExamService.Models
         {
             get => LazyLoader.Load(this, ref _user);
             set => _user = value;
+        }
+
+         public List<Answer> Answers
+        {
+            get => LazyLoader.Load(this, ref _answers);
+            set => _answers = value;
         }
     }
 }

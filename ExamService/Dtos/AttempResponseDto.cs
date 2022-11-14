@@ -11,6 +11,6 @@ namespace ExamService.Dtos
 
         public ExamResponseDto Exam { get; set; }
 
-        public UserRequestDto User { get; set; }
+        public UserResponseDto User { get; set; }
     }
 }

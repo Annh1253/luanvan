@@ -14,7 +14,8 @@ class Question {
   }
 
   checkAnswer(questionId, answer) {
-    const question = this.findQuestionById(questionId);
+    let question = this.findQuestionById(questionId);
+    console.log("Question is: " + question);
     return question.correctAnswer == answer;
   }
 }

@@ -44,20 +44,20 @@ class SocketIO {
 
     //
     io.on(RecieveEventType.USER_CONNECT, function (socket) {
-      socket.on(RecieveEventType.CREATE_ROOM, async ({ username, room }) => {
+      socket.on(RecieveEventType.CREATE_ROOM, async ({ email, examId }) => {
         console.log("Getting question");
 
-        const questionList = await repo.loadAllQuestionsOfExam(room);
+        const questionList = await repo.loadAllQuestionsOfExam(examId);
         questions.questions = questionList;
         console.log(questions.questions);
-        socket.emit("create-room-success", { roomId: username + room });
+        socket.emit("create-room-success", { roomId: email + examId });
       });
 
-      socket.on(RecieveEventType.USER_JOIN_ROOM, async ({ username, roomId }) => {
+      socket.on(RecieveEventType.USER_JOIN_ROOM, async ({ email, roomId }) => {
         console.log("Someone connect");
 
-        const user = userJoin(socket.id, username, roomId);
-        console.log(username, roomId);
+        const user = userJoin(socket.id, email, roomId);
+        console.log(email, roomId);
         socket.join(user.room);
 
         io.to(user.room).emit(RecieveEventType.SERVER_UPDATE_USER, {
@@ -82,7 +82,7 @@ class SocketIO {
           const user = getCurrentUser(socket.id);
           user.answers.push({
             questionId: message.questionId,
-            optionId: message.optionId,
+            optionId: parseInt(message.optionId),
           });
           const isCorrect = questions.checkAnswer(
             message.questionId,
@@ -110,7 +110,7 @@ class SocketIO {
           let payload = {
             ExternalExamId: exam.externalId,
             Attemps: [],
-            Event: EventType.ExamDone
+            Event: EventType.ExamDone,
           };
           const users = getRoomUsers(getCurrentUser(socket.id).room);
           for (let user1 of users) {
@@ -120,6 +120,7 @@ class SocketIO {
               answers: user1.answers,
             });
             user1.score = 0;
+            user1.answers = [];
           }
           console.log(payload);
           console.log(payload.Attemps[0].answers);

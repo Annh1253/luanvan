@@ -182,11 +182,18 @@ namespace ExamService.Services
                 bool isChanged = _questionRepository.UpdateQuestion(oldQuestionId, newQuestionUpdateDto);
                 if(!(isChanged || isAnyOptionChanged))
                 {
+                    
                     return new ServiceResponse<QuestionResponseDto>()
                     {
                         Message = SuccessMessage.UNCHANGE,
                         StatusCode = HttpStatusCode.OK
                     };
+                }
+                if(isChanged){
+                    Question updatedQuestion = _questionRepository.GetById(oldQuestionId);
+                    int ExamId = updatedQuestion.Exam.Id;
+                    QuestionResponseDto questionResponseDto = _mapper.Map<QuestionResponseDto>(updatedQuestion);
+                    _messagePublisher.PublishQuestion(questionResponseDto, ExamId, EventType.UpdateQuestion);
                 }
             }catch(Exception ex){
                 return new ServiceResponse<QuestionResponseDto>()
@@ -195,6 +202,8 @@ namespace ExamService.Services
                         StatusCode = HttpStatusCode.InternalServerError
                     };
             }
+
+            
 
             return new ServiceResponse<QuestionResponseDto>()
             {
