@@ -6,7 +6,9 @@ class ExamChallengeRepository {
     const question = await Question.findOne({
       externalId: userAnswer.questionId,
     });
-    return question.externalCorrectOptionId === userAnswer.optionId;
+    return question.externalCorrectOptionId == userAnswer.optionId
+      ? { isCorrect: true, score: question.score }
+      : { isCorrect: false, score: 0 };
   }
 
   async saveExam(exam) {
@@ -30,7 +32,7 @@ class ExamChallengeRepository {
     const newQuestion = new Question({
       externalId: question.ExternalId,
       externalCorrectOptionId: question.ExternalCorrectAnswerId,
-      score: question.Score
+      score: question.Score,
     });
     newQuestion
       .save()
@@ -65,7 +67,12 @@ class ExamChallengeRepository {
   }
 
   async loadAllQuestionsOfExam(examId) {
+    const exams = await Exam.find({});
+    console.log(exams);
+    console.log("ExamID: " + examId);
     const exam = await Exam.findOne({ externalId: examId });
+    console.log("Exam: " + exam);
+
     const questions = [];
 
     for (let i = 0; i < exam.questions.length; i++) {
@@ -94,7 +101,7 @@ class ExamChallengeRepository {
     const filter = { externalId: question.ExternalId };
     const update = {
       externalCorrectOptionId: question.ExternalCorrectAnswerId,
-      score: question.Score
+      score: question.Score,
     };
     const questionToUpdate = Question.findOneAndUpdate(filter, update)
       .then(async (data) => {

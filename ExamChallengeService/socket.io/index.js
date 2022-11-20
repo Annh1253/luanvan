@@ -28,9 +28,11 @@ const RecieveEventType = {
 };
 
 const SendEventType = {
+  CREATE_ROOM_SUCCESS: "create-room-success",
   CORRECT_ANSWER: "option-is-correct",
   CORRECT_ANSWER_BY_SOE: "option-is-correct-by-soe",
   WRON_ANSWER: "option-is-wrong",
+  EXAM_RESULT: "exam-result",
 };
 
 class SocketIO {
@@ -50,7 +52,9 @@ class SocketIO {
         const questionList = await repo.loadAllQuestionsOfExam(examId);
         questions.questions = questionList;
         console.log(questions.questions);
-        socket.emit("create-room-success", { roomId: email + examId });
+        socket.emit(SendEventType.CREATE_ROOM_SUCCESS, {
+          roomId: email + examId,
+        });
       });
 
       socket.on(RecieveEventType.USER_JOIN_ROOM, async ({ email, roomId }) => {
@@ -84,22 +88,28 @@ class SocketIO {
             questionId: message.questionId,
             optionId: parseInt(message.optionId),
           });
-          const isCorrect = questions.checkAnswer(
+          const validateResult = questions.checkAnswer(
             message.questionId,
             message.optionId
           );
-          if (isCorrect) {
+          console.log(validateResult);
+          if (validateResult.isCorrect) {
             const user = getCurrentUser(socket.id);
-            user.score += 10;
+            user.totalScore += validateResult.score;
             socket.emit(SendEventType.CORRECT_ANSWER, {
               correctAnswer: message.optionId,
+              totalScore: user.totalScore,
+              score: validateResult.score,
             });
             socket.to(user.room).emit(SendEventType.CORRECT_ANSWER_BY_SOE, {
               correctAnswer: message.optionId,
+              totalScore: user.totalScore,
             });
           } else {
             socket.emit(SendEventType.WRON_ANSWER, {
               wrongAnswer: message.optionId,
+              totalScore: user.totalScore,
+              score: validateResult.score,
             });
           }
         });
@@ -113,13 +123,17 @@ class SocketIO {
             Event: EventType.ExamDone,
           };
           const users = getRoomUsers(getCurrentUser(socket.id).room);
+          io.to(user.room).emit(SendEventType.EXAM_RESULT, {
+            room: user.room,
+            users: users,
+          });
           for (let user1 of users) {
             payload.Attemps.push({
               user: user1.username,
-              score: user1.score,
+              score: user1.totalScore,
               answers: user1.answers,
             });
-            user1.score = 0;
+            user1.totalScore = 0;
             user1.answers = [];
           }
           console.log(payload);

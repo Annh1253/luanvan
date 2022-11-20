@@ -6,7 +6,7 @@ function userJoin(id, username, room) {
     id, 
     username, 
     room, 
-    score: 0 ,
+    totalScore: 0 ,
     answers: []
   };
 
