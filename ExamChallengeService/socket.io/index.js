@@ -16,6 +16,7 @@ const EventType = require("../EventProcessing/EventType");
 const questions = new Question();
 
 const RecieveEventType = {
+  START_EXAM: "start-exam",
   CREATE_ROOM: "create-room",
   USER_CONNECT: "connection",
   USER_CHOOSE_OPTION: "user-choose-option",
@@ -28,6 +29,7 @@ const RecieveEventType = {
 };
 
 const SendEventType = {
+  START_EXAM_SUCCESS: "start-exam-success",
   CREATE_ROOM_SUCCESS: "create-room-success",
   CORRECT_ANSWER: "option-is-correct",
   CORRECT_ANSWER_BY_SOE: "option-is-correct-by-soe",
@@ -53,7 +55,7 @@ class SocketIO {
         questions.questions = questionList;
         console.log(questions.questions);
         socket.emit(SendEventType.CREATE_ROOM_SUCCESS, {
-          roomId: email + examId,
+          roomId: email + '_' + examId,
         });
       });
 
@@ -81,6 +83,10 @@ class SocketIO {
             formatMessage(serverName, `${user.username} has joined the channel`)
           );
 
+        socket.on(RecieveEventType.START_EXAM, () => {
+          io.to(user.room).emit(SendEventType.START_EXAM_SUCCESS);
+        });
+
         socket.on(RecieveEventType.USER_CHOOSE_OPTION, (message) => {
           console.log(message);
           const user = getCurrentUser(socket.id);
@@ -103,7 +109,6 @@ class SocketIO {
             });
             socket.to(user.room).emit(SendEventType.CORRECT_ANSWER_BY_SOE, {
               correctAnswer: message.optionId,
-              totalScore: user.totalScore,
             });
           } else {
             socket.emit(SendEventType.WRON_ANSWER, {
