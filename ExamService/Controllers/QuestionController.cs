@@ -35,6 +35,14 @@ namespace ExamService.Controllers
             return StatusCode((int)serviceResponse.StatusCode, controllerResponse);
         }
 
+        [HttpGet("{questionId}")]
+        public IActionResult GetQuestionById(int questionId)
+        {
+            ServiceResponse<QuestionResponseDto> serviceResponse = _questionService.GetById(questionId);
+            ControllerResponse<QuestionResponseDto> controllerResponse = _mapper.Map<ControllerResponse<QuestionResponseDto>>(serviceResponse);
+            return StatusCode((int)serviceResponse.StatusCode, controllerResponse);
+        }
+
        
 
         [HttpPost("exam/{examId}")]

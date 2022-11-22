@@ -27,7 +27,7 @@ namespace ExamService.Repositories
 
         public bool Exist(int id)
         {
-            return _dbContext.Exams.Any(e => e.Id == id );
+            return _dbContext.Exams.Any(e => e.Id == id);
         }
 
         public List<Exam> GetAllExams()
@@ -43,15 +43,16 @@ namespace ExamService.Repositories
 
         public Exam GetByName(string name)
         {
-             return _dbContext.Exams.FirstOrDefault(e => e.Name == name);
+            return _dbContext.Exams.FirstOrDefault(e => e.Name == name);
         }
 
-         public Exam GetByEmail(string email)
+        public Exam GetByEmail(string email)
         {
-             return _dbContext.Exams.FirstOrDefault(e => e.AuthorEmail == email);
+            return _dbContext.Exams.FirstOrDefault(e => e.AuthorEmail == email);
         }
 
-        public bool UpdateExam(int OldExamId , ExamUpdateRequestDto newExam){
+        public bool UpdateExam(int OldExamId, ExamUpdateRequestDto newExam)
+        {
             Exam oldExam = _dbContext.Exams.First(e => e.Id == OldExamId);
             CRUDHelper.CopyNoneNull(newExam, oldExam);
             return SaveChanges();
@@ -59,14 +60,14 @@ namespace ExamService.Repositories
 
         public bool RemoveExam(Exam exam)
         {
-            
+
             _dbContext.Exams.Remove(exam);
             return SaveChanges();
         }
 
         private Boolean SaveChanges()
         {
-            return this._dbContext.SaveChanges()>0;
+            return this._dbContext.SaveChanges() > 0;
         }
 
         public List<Exam> GetAllExamsByTopic(Topic topic)

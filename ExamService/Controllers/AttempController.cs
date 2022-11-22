@@ -24,9 +24,25 @@ namespace ExamService.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll(){
-            ServiceResponse<List<AttempResponseDto>> serviceResponse = _attempService.GetAttemps();
+        public IActionResult GetAll([FromQuery] AttempRequestFilter AttempFilter){
+            ServiceResponse<List<AttempResponseDto>> serviceResponse = _attempService.GetAttemps(AttempFilter);
             ControllerResponse<List<AttempResponseDto>> controllerResponse = _mapper.Map<ControllerResponse<List<AttempResponseDto>>>(serviceResponse);
+            return StatusCode((int)serviceResponse.StatusCode, controllerResponse);
+        }
+
+
+
+        [HttpGet("{AttempId}")]
+        public IActionResult GetById(int AttempId){
+            ServiceResponse<AttempResponseDto> serviceResponse = _attempService.GetById(AttempId);
+            ControllerResponse<AttempResponseDto> controllerResponse = _mapper.Map<ControllerResponse<AttempResponseDto>>(serviceResponse);
+            return StatusCode((int)serviceResponse.StatusCode, controllerResponse);
+        }
+
+        [HttpDelete("{AttempId}")]
+        public IActionResult RemoveById(int AttempId){
+            ServiceResponse<AttempResponseDto> serviceResponse = _attempService.RemoveAttemp(AttempId);
+            ControllerResponse<AttempResponseDto> controllerResponse = _mapper.Map<ControllerResponse<AttempResponseDto>>(serviceResponse);
             return StatusCode((int)serviceResponse.StatusCode, controllerResponse);
         }
     }

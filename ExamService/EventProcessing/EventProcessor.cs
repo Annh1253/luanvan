@@ -119,7 +119,7 @@ namespace ExamService.EventProcessing
                             Email = attemp.user,
                             ExamId = examDoneDto.ExternalExamId
                         };
-
+                        attempRequest.Answers = new List<AnswerRequestDto>();
                         foreach(var answer in attemp.answers)
                         {
                             AnswerRequestDto answerRequestDto = new AnswerRequestDto()

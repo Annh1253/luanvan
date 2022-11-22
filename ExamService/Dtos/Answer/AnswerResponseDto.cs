@@ -7,9 +7,9 @@ namespace ExamService.Dtos.Answer
 {
     public class AnswerResponseDto
     {
+        public int Id { get; set; }
         public QuestionResponseDto Question { get; set; }
         public OptionResponseDto Option { get; set; }
-        public AttempResponseDto Attemp { get; set; }
 
     }
 }

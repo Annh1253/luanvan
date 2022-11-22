@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using ExamService.Dtos;
+using ExamService.Dtos.Answer;
 using ExamService.Models;
 using ExamService.Response;
 
@@ -17,12 +14,13 @@ namespace ExamService.Profiles
             CreateMap<Topic, TopicResponseDto>();
             CreateMap<TopicRequestDto, Topic>();
 
-            CreateMap<Exam, ExamResponseDto>();
+            CreateMap<Exam, ExamResponseDto>()
+                .ForMember(dest => dest.Topic, opt => opt.MapFrom(src => src.Topic.Name));
             CreateMap<ExamRequestDto, Exam>();
 
             CreateMap<Question, QuestionResponseDto>();
             CreateMap<QuestionRequestDto, Question>();
-       
+
             CreateMap<Option, OptionResponseDto>();
             CreateMap<OptionRequestDto, Option>();
 
@@ -34,13 +32,16 @@ namespace ExamService.Profiles
             CreateMap<Attemp, AttempExamResponseDto>();
             CreateMap<AttempRequestDto, Attemp>();
 
+            CreateMap<Answer, AnswerResponseDto>();
+
+
             CreateMap<ServiceResponse<TopicResponseDto>, ControllerResponse<TopicResponseDto>>();
             CreateMap<ServiceResponse<List<TopicResponseDto>>, ControllerResponse<List<TopicResponseDto>>>();
 
             CreateMap<ServiceResponse<ExamResponseDto>, ControllerResponse<ExamResponseDto>>();
             CreateMap<ServiceResponse<List<ExamResponseDto>>, ControllerResponse<List<ExamResponseDto>>>();
 
-           
+
             CreateMap<ServiceResponse<QuestionResponseDto>, ControllerResponse<QuestionResponseDto>>();
             CreateMap<ServiceResponse<List<QuestionResponseDto>>, ControllerResponse<List<QuestionResponseDto>>>();
 
@@ -51,15 +52,16 @@ namespace ExamService.Profiles
             CreateMap<ServiceResponse<List<UserResponseDto>>, ControllerResponse<List<UserResponseDto>>>();
 
             CreateMap<ServiceResponse<List<AttempResponseDto>>, ControllerResponse<List<AttempResponseDto>>>();
+            CreateMap<ServiceResponse<AttempResponseDto>, ControllerResponse<AttempResponseDto>>();
 
             CreateMap<CredentialPublishedDto, UserRequestDto>();
-            
+
             CreateMap<ExamResponseDto, ExamPublishedDto>()
                 .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.Id));
             CreateMap<QuestionResponseDto, QuestionPublishedDto>()
                 .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.Id));
             CreateMap<OptionResponseDto, OptionPublishedDto>()
-                .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.Id));    
+                .ForMember(dest => dest.ExternalId, opt => opt.MapFrom(src => src.Id));
         }
     }
 }

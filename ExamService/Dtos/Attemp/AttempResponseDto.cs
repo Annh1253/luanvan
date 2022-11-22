@@ -8,6 +8,6 @@ namespace ExamService.Dtos.Attemp
     public class AttempResponseDto
     {
         public double Score { get; set; }
-
+        
     }
 }

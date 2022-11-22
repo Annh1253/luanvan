@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 
 async function connect() {
   await mongoose
-    .connect(process.env.MONGO_URL_LOCAL, {
-        // .connect(process.env.MONGO_URL_K8S,{
+    // .connect(process.env.MONGO_URL_LOCAL, {
+        .connect(process.env.MONGO_URL_K8S,{
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })

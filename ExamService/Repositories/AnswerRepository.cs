@@ -18,20 +18,26 @@ namespace ExamService.Repositories
         }
         public bool AddAnswer(Answer Answer)
         {
-            try{
+            try
+            {
                 _dbContext.Answers.Add(Answer);
                 return SaveChanges();
-            }catch(Exception ex){
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
 
         public bool AddAnswers(List<Answer> Answers)
         {
-            try{
+            try
+            {
                 _dbContext.Answers.AddRange(Answers);
                 return SaveChanges();
-            }catch(Exception ex){
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
@@ -43,25 +49,32 @@ namespace ExamService.Repositories
 
         public List<Answer> GetAllAnswers()
         {
-            try{
+            try
+            {
                 return _dbContext.Answers.ToList();
-            }catch(Exception ex){
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
 
         public Answer GetById(int id)
         {
-            try{
+            try
+            {
                 return _dbContext.Answers.FirstOrDefault(answer => answer.Id == id);
-        
-            }catch(Exception ex){
+
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
 
-        public bool SaveChanges(){
-            return _dbContext.SaveChanges()>0;
+        public bool SaveChanges()
+        {
+            return _dbContext.SaveChanges() > 0;
         }
     }
 }

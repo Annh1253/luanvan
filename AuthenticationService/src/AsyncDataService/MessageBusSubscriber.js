@@ -2,8 +2,8 @@ var amqp = require("amqplib/callback_api");
 var EventProcessor = require("../EventProcessing/EventProcessor");
 
 amqp.connect(
-  `amqp://${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`,
-  // `amqp://${process.env.RABBITMQ_HOST_K8S}:${process.env.RABBITMQ_PORT_K8S}`,
+  // `amqp://${process.env.RABBITMQ_HOST}:${process.env.RABBITMQ_PORT}`,
+  `amqp://${process.env.RABBITMQ_HOST_K8S}:${process.env.RABBITMQ_PORT_K8S}`,
   function (error0, connection) {
     if (error0) {
       throw error0;

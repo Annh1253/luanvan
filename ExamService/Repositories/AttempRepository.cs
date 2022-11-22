@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
+using System.Linq.Expressions;
 using ExamService.Contracts.RepositoryContracts;
 using ExamService.Data;
 using ExamService.Models;
@@ -18,20 +16,26 @@ namespace ExamService.Repositories
         }
         public bool AddAttemp(Attemp Attemp)
         {
-            try{
+            try
+            {
                 _dbContext.Attemps.Add(Attemp);
                 return SaveChanges();
-            }catch(Exception ex){
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
 
         public bool AddAttemps(List<Attemp> Attemp)
         {
-             try{
+            try
+            {
                 _dbContext.Attemps.AddRange(Attemp);
                 return SaveChanges();
-            }catch(Exception ex){
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
@@ -43,26 +47,51 @@ namespace ExamService.Repositories
 
         public List<Attemp> GetAllAttemps()
         {
-            try{
+            try
+            {
                 return _dbContext.Attemps.ToList();
-               
-            }catch(Exception ex){
+
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
+        }
+
+        public List<Attemp> GetAllAttempsWithPredicate(Expression<Func<Attemp, bool>> AttempPredicate)
+        {
+            return _dbContext.Attemps.Where(AttempPredicate).ToList();
         }
 
         public Attemp GetById(int id)
         {
-            try{
+            try
+            {
                 return _dbContext.Attemps.FirstOrDefault(attemp => attemp.Id == id);
-        
-            }catch(Exception ex){
+
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
 
-        public bool SaveChanges(){
-            return _dbContext.SaveChanges()>0;
+        public bool RemoveAttemp(Attemp Attemp)
+        {
+            try
+            {
+                _dbContext.Attemps.Remove(Attemp);
+                return SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public bool SaveChanges()
+        {
+            return _dbContext.SaveChanges() > 0;
         }
     }
 }

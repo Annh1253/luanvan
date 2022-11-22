@@ -13,7 +13,7 @@ namespace ExamService.Repositories
     public class OptionRepository : IOptionRepository
     {
 
-       private readonly DBContext _dbContext;
+        private readonly DBContext _dbContext;
 
         public OptionRepository(DBContext dbContext)
         {
@@ -22,10 +22,13 @@ namespace ExamService.Repositories
         public bool AddOption(Option option)
         {
             Console.WriteLine("Saving option");
-            try{
+            try
+            {
                 _dbContext.Options.Add(option);
                 return SaveChanges();
-            }catch(Exception ex){
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
@@ -37,19 +40,21 @@ namespace ExamService.Repositories
 
         public List<Option> GetAllOptions()
         {
-           return _dbContext.Options.ToList();
+            return _dbContext.Options.ToList();
         }
 
         public Option GetById(int id)
         {
-           return _dbContext.Options.FirstOrDefault(o => o.Id == id);
+            return _dbContext.Options.FirstOrDefault(o => o.Id == id);
         }
 
         public bool RemoveOption(Option question)
         {
-            try{
+            try
+            {
                 _dbContext.Options.Remove(question);
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -59,11 +64,13 @@ namespace ExamService.Repositories
 
         public bool UpdateOption(int OldOptionId, OptionUpdateRequestDto newOption)
         {
-            try{
+            try
+            {
                 Option oldOption = _dbContext.Options.First(o => o.Id == OldOptionId);
                 CRUDHelper.CopyNoneNull(newOption, oldOption);
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -73,7 +80,7 @@ namespace ExamService.Repositories
 
         private Boolean SaveChanges()
         {
-            return this._dbContext.SaveChanges()>0;
+            return this._dbContext.SaveChanges() > 0;
         }
     }
 }

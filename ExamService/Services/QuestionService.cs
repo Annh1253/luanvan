@@ -37,7 +37,7 @@ namespace ExamService.Services
 
         public ServiceResponse<QuestionResponseDto> AddQuestion(int ExamId, QuestionRequestDto questionRequestDto)
         {
-            if(!_examRepository.Exist(ExamId))
+            if (!_examRepository.Exist(ExamId))
             {
                 return new ServiceResponse<QuestionResponseDto>()
                 {
@@ -50,7 +50,7 @@ namespace ExamService.Services
             Question questionEntity = _mapper.Map<Question>(questionRequestDto);
             questionEntity.Exam = examEntity;
             bool isSuceeded = _questionRepository.AddQuestion(questionEntity);
-            if(!isSuceeded)
+            if (!isSuceeded)
             {
                 return new ServiceResponse<QuestionResponseDto>()
                 {
@@ -60,7 +60,7 @@ namespace ExamService.Services
             }
 
             QuestionResponseDto questionResponseDto = _mapper.Map<QuestionResponseDto>(questionEntity);
-            
+
             _messagePublisher.PublishQuestion(questionResponseDto, ExamId, EventType.NewQuestionCreate);
 
             return new ServiceResponse<QuestionResponseDto>()
@@ -78,15 +78,16 @@ namespace ExamService.Services
 
         public ServiceResponse<QuestionResponseDto> GetById(int id)
         {
-             Question questionEntity = _questionRepository.GetById(id);
-         
-            
+            Question questionEntity = _questionRepository.GetById(id);
+
+
             // if guard
-            if (questionEntity != null) return new ServiceResponse<QuestionResponseDto>(){
+            if (questionEntity == null) return new ServiceResponse<QuestionResponseDto>()
+            {
                 StatusCode = HttpStatusCode.NotFound,
                 Message = "Question not found"
             };
-            
+
             QuestionResponseDto questionReadDto = _mapper.Map<QuestionResponseDto>(questionEntity);
             var serviceResponse = new ServiceResponse<QuestionResponseDto>();
             serviceResponse.Data = questionReadDto;
@@ -104,23 +105,24 @@ namespace ExamService.Services
 
         public ServiceResponse<QuestionResponseDto> RemoveQuestion(int id)
         {
-           if(!_questionRepository.Exist(id))
-           {
+            if (!_questionRepository.Exist(id))
+            {
                 return new ServiceResponse<QuestionResponseDto>()
                 {
                     Message = "Question not found",
                     StatusCode = HttpStatusCode.NotFound
                 };
-           }
+            }
 
             Question questionToDelete = _questionRepository.GetById(id);
-            Question questionHolder = new Question(){
+            Question questionHolder = new Question()
+            {
                 Id = questionToDelete.Id,
                 Exam = questionToDelete.Exam,
                 Content = questionToDelete.Content
             };
             bool isSuceeded = _questionRepository.RemoveQuestion(questionToDelete);
-            if(!isSuceeded)
+            if (!isSuceeded)
             {
                 return new ServiceResponse<QuestionResponseDto>()
                 {
@@ -131,8 +133,8 @@ namespace ExamService.Services
 
             QuestionResponseDto questionResponseDto = _mapper.Map<QuestionResponseDto>(questionHolder);
             _messagePublisher.PublishQuestion(questionResponseDto, questionHolder.Exam.Id, EventType.DeleteQuestion);
-            return new ServiceResponse<QuestionResponseDto>() 
-            { 
+            return new ServiceResponse<QuestionResponseDto>()
+            {
                 Data = questionResponseDto,
                 Success = true,
                 StatusCode = HttpStatusCode.OK,
@@ -143,7 +145,7 @@ namespace ExamService.Services
 
         public ServiceResponse<QuestionResponseDto> UpdateQuestion(int oldQuestionId, QuestionUpdateRequestDto QuestionRequestDto)
         {
-            if(!_questionRepository.Exist(oldQuestionId))
+            if (!_questionRepository.Exist(oldQuestionId))
             {
                 return new ServiceResponse<QuestionResponseDto>()
                 {
@@ -153,57 +155,65 @@ namespace ExamService.Services
             }
 
 
-            try{
+            try
+            {
                 bool isAnyOptionChanged = false;
-                if(QuestionRequestDto.options != null)
+                if (QuestionRequestDto.options != null)
                 {
-                    foreach(OptionUpdateRequestDto optionDto in QuestionRequestDto.options)
+                    foreach (OptionUpdateRequestDto optionDto in QuestionRequestDto.options)
                     {
                         bool isOptionChanged = _optionRepository.UpdateOption(optionDto.Id, optionDto);
                         //Send update correct option message 
-                         if(isOptionChanged && optionDto.IsCorrect == true){
+                        if (isOptionChanged && optionDto.IsCorrect == true)
+                        {
                             Question updatedQuestion = _questionRepository.GetById(oldQuestionId);
                             int ExamId = updatedQuestion.Exam.Id;
                             QuestionResponseDto questionResponseDto = _mapper.Map<QuestionResponseDto>(updatedQuestion);
                             _messagePublisher.PublishQuestion(questionResponseDto, ExamId, EventType.UpdateQuestion);
                         }
-                        if(!isAnyOptionChanged){
+                        if (!isAnyOptionChanged)
+                        {
                             isAnyOptionChanged = isOptionChanged;
                         }
                     }
 
                 }
 
-                QuestionUpdateRequestDto newQuestionUpdateDto = new QuestionUpdateRequestDto(){
+                QuestionUpdateRequestDto newQuestionUpdateDto = new QuestionUpdateRequestDto()
+                {
                     Content = QuestionRequestDto.Content,
-                    Score = QuestionRequestDto.Score
+                    Score = QuestionRequestDto.Score,
+                    TimeLimit = QuestionRequestDto.TimeLimit
                 };
 
                 bool isChanged = _questionRepository.UpdateQuestion(oldQuestionId, newQuestionUpdateDto);
-                if(!(isChanged || isAnyOptionChanged))
+                if (!(isChanged || isAnyOptionChanged))
                 {
-                    
+
                     return new ServiceResponse<QuestionResponseDto>()
                     {
                         Message = SuccessMessage.UNCHANGE,
                         StatusCode = HttpStatusCode.OK
                     };
                 }
-                if(isChanged){
+                if (isChanged)
+                {
                     Question updatedQuestion = _questionRepository.GetById(oldQuestionId);
                     int ExamId = updatedQuestion.Exam.Id;
                     QuestionResponseDto questionResponseDto = _mapper.Map<QuestionResponseDto>(updatedQuestion);
                     _messagePublisher.PublishQuestion(questionResponseDto, ExamId, EventType.UpdateQuestion);
                 }
-            }catch(Exception ex){
+            }
+            catch (Exception ex)
+            {
                 return new ServiceResponse<QuestionResponseDto>()
-                    {
-                        Message = ex.Message,
-                        StatusCode = HttpStatusCode.InternalServerError
-                    };
+                {
+                    Message = ex.Message,
+                    StatusCode = HttpStatusCode.InternalServerError
+                };
             }
 
-            
+
 
             return new ServiceResponse<QuestionResponseDto>()
             {

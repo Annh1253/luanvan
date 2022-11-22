@@ -16,6 +16,7 @@ const EventType = require("../EventProcessing/EventType");
 const questions = new Question();
 
 const RecieveEventType = {
+  START_EXAM: "start-exam",
   CREATE_ROOM: "create-room",
   USER_CONNECT: "connection",
   USER_CHOOSE_OPTION: "user-choose-option",

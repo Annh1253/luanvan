@@ -7,11 +7,12 @@ namespace ExamService.Dtos
 {
     public class QuestionRequestDto
     {
-        public string  Content { get; set;}
+        public string Content { get; set; }
 
         public double Score { get; set; } = 10;
+        public int TimeLimit { get; set; } = 5;
 
-        public List<OptionRequestDto> Options { get; set;}
+        public List<OptionRequestDto> Options { get; set; }
 
     }
 }

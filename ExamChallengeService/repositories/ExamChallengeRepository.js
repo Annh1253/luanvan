@@ -33,6 +33,7 @@ class ExamChallengeRepository {
       externalId: question.ExternalId,
       externalCorrectOptionId: question.ExternalCorrectAnswerId,
       score: question.Score,
+      timeLimit: question.TimeLimit
     });
     newQuestion
       .save()
@@ -82,6 +83,7 @@ class ExamChallengeRepository {
           questionId: question.externalId,
           correctAnswer: question.externalCorrectOptionId,
           score: question.score ? question.score : 0,
+          timeLimit: question.timeLimit ? question.timeLimit : 0
         });
       }
     }
@@ -102,6 +104,7 @@ class ExamChallengeRepository {
     const update = {
       externalCorrectOptionId: question.ExternalCorrectAnswerId,
       score: question.Score,
+      timeLimit: question.TimeLimit
     };
     const questionToUpdate = Question.findOneAndUpdate(filter, update)
       .then(async (data) => {

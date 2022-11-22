@@ -23,80 +23,84 @@ namespace ExamService.Helpers
             this._messageBusClient = messageBusClient;
         }
 
-       
+
 
         public bool PublishExam(ExamResponseDto examResponseDto, EventType eventType)
         {
-           try
-           {  
-               ExamPublishedDto examPublishedDto = _mapper.Map<ExamPublishedDto>(examResponseDto);
-               examPublishedDto.Event = EventGenerator.generateEvent(eventType);
-               _messageBusClient.PublishExam(examPublishedDto);
-          }
-           catch(Exception e)
-           {
+            try
+            {
+                ExamPublishedDto examPublishedDto = _mapper.Map<ExamPublishedDto>(examResponseDto);
+                examPublishedDto.Event = EventGenerator.generateEvent(eventType);
+                _messageBusClient.PublishExam(examPublishedDto);
+            }
+            catch (Exception e)
+            {
                 throw e;
-           }
-           return true;
+            }
+            return true;
         }
 
-       
+
 
         public bool PublishQuestion(QuestionResponseDto questionResponseDto, int examId, EventType eventType)
         {
             try
-           {  
+            {
                 int correctOptionId = -1;
-                foreach(OptionResponseDto option in questionResponseDto.Options)
+                foreach (OptionResponseDto option in questionResponseDto.Options)
                 {
-                    if(option.IsCorrect)
+                    if (option.IsCorrect)
                     {
                         correctOptionId = option.Id;
                         break;
                     }
                 }
-               QuestionPublishedDto questionPublishedDto = new QuestionPublishedDto(){
+                QuestionPublishedDto questionPublishedDto = new QuestionPublishedDto()
+                {
                     ExternalId = questionResponseDto.Id,
                     ExternalExamId = examId,
                     ExternalCorrectAnswerId = correctOptionId,
                     Score = questionResponseDto.Score,
+                    TimeLimit = questionResponseDto.TimeLimit,
                     Event = EventGenerator.generateEvent(eventType)
-               };
-               _messageBusClient.PublishQuestion(questionPublishedDto);
-          }
-           catch(Exception e)
-           {
+                };
+                _messageBusClient.PublishQuestion(questionPublishedDto);
+            }
+            catch (Exception e)
+            {
                 throw e;
-           }
-           return true;
+            }
+            return true;
         }
 
         public bool PublishQuestion(QuestionResponseDto questionResponseDto, EventType eventType)
         {
-             try
-           {  
+            try
+            {
                 int correctOptionId = -1;
-                foreach(OptionResponseDto option in questionResponseDto.Options)
+                foreach (OptionResponseDto option in questionResponseDto.Options)
                 {
-                    if(option.IsCorrect)
+                    if (option.IsCorrect)
                     {
                         correctOptionId = option.Id;
                         break;
                     }
                 }
-               QuestionPublishedDto questionPublishedDto = new QuestionPublishedDto(){
+                QuestionPublishedDto questionPublishedDto = new QuestionPublishedDto()
+                {
                     ExternalId = questionResponseDto.Id,
                     ExternalCorrectAnswerId = correctOptionId,
                     Score = questionResponseDto.Score,
+                    TimeLimit = questionResponseDto.TimeLimit,
                     Event = EventGenerator.generateEvent(eventType)
-               };
-               _messageBusClient.PublishQuestion(questionPublishedDto);
-          }
-           catch(Exception e)
-           {
+                };
+                _messageBusClient.PublishQuestion(questionPublishedDto);
+            }
+            catch (Exception e)
+            {
                 throw e;
-           }
-           return true;
+            }
+            return true;
         }
     }
 }

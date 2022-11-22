@@ -10,10 +10,10 @@ namespace ExamService.Dtos
         public int ExternalId { get; set; }
         public int ExternalExamId { get; set; } = default;
         public int ExternalCorrectAnswerId { get; set; }
-
+        public int TimeLimit { get; set; }
         public double Score { get; set; } = 10;
 
-        public string Event  { get; set; }
+        public string Event { get; set; }
 
     }
 }

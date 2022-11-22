@@ -13,6 +13,8 @@ namespace ExamService.Dtos
 
         public String AuthorEmail { get; set; }
 
+        public String Topic { get; set; }
+
         public int TimeLimit { get; set; }
 
 
