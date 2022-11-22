@@ -16,6 +16,7 @@ const EventType = require("../EventProcessing/EventType");
 const questions = new Question();
 
 const RecieveEventType = {
+  START_QUESTION: "start-question",
   START_EXAM: "start-exam",
   CREATE_ROOM: "create-room",
   USER_CONNECT: "connection",
@@ -29,12 +30,18 @@ const RecieveEventType = {
 };
 
 const SendEventType = {
+  START_QUESTION_SUCCESS: "start-question-success",
   START_EXAM_SUCCESS: "start-exam-success",
   CREATE_ROOM_SUCCESS: "create-room-success",
   CORRECT_ANSWER: "option-is-correct",
   CORRECT_ANSWER_BY_SOE: "option-is-correct-by-soe",
   WRON_ANSWER: "option-is-wrong",
   EXAM_RESULT: "exam-result",
+};
+
+const sendQuestionStartTime = function (io) {
+  let startTime = Date.now();
+  io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, { startTime });
 };
 
 class SocketIO {
@@ -55,7 +62,7 @@ class SocketIO {
         questions.questions = questionList;
         console.log(questions.questions);
         socket.emit(SendEventType.CREATE_ROOM_SUCCESS, {
-          roomId: email + '_' + examId,
+          roomId: email + "_" + examId,
         });
       });
 
@@ -85,6 +92,17 @@ class SocketIO {
 
         socket.on(RecieveEventType.START_EXAM, () => {
           io.to(user.room).emit(SendEventType.START_EXAM_SUCCESS);
+          let startTime = Date.now();
+          io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, {
+            startTime,
+          });
+        });
+
+        socket.on(RecieveEventType.START_QUESTION, () => {
+          let startTime = Date.now();
+          io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, {
+            startTime,
+          });
         });
 
         socket.on(RecieveEventType.USER_CHOOSE_OPTION, (message) => {
