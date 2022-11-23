@@ -91,11 +91,8 @@ class SocketIO {
           );
 
         socket.on(RecieveEventType.START_EXAM, () => {
-          io.to(user.room).emit(SendEventType.START_EXAM_SUCCESS);
-          let startTime = Date.now();
-          io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, {
-            startTime,
-          });
+          let startTime = Date.now()
+          io.to(user.room).emit(SendEventType.START_EXAM_SUCCESS, {startTime});
         });
 
         socket.on(RecieveEventType.START_QUESTION, () => {
@@ -112,6 +109,9 @@ class SocketIO {
             questionId: message.questionId,
             optionId: parseInt(message.optionId),
           });
+
+          console.log(user)
+
           const validateResult = questions.checkAnswer(
             message.questionId,
             message.optionId
@@ -120,6 +120,10 @@ class SocketIO {
           if (validateResult.isCorrect) {
             const user = getCurrentUser(socket.id);
             user.totalScore += validateResult.score;
+            let startTime = Date.now();
+            io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, {
+              startTime,
+            });
             socket.emit(SendEventType.CORRECT_ANSWER, {
               correctAnswer: message.optionId,
               totalScore: user.totalScore,
@@ -139,7 +143,9 @@ class SocketIO {
 
         socket.on(RecieveEventType.SUBMIT_TEST, async function () {
           const user = getCurrentUser(socket.id);
-          const exam = await repo.getExamOfQuestion(user.answers[0].questionId);
+          console.log("user :", user)
+          let examId = user.room.split('_').at(-1);
+          let exam = await repo.getExamById(examId);
           let payload = {
             ExternalExamId: exam.externalId,
             Attemps: [],
@@ -150,17 +156,18 @@ class SocketIO {
             room: user.room,
             users: users,
           });
-          for (let user1 of users) {
-            payload.Attemps.push({
-              user: user1.username,
-              score: user1.totalScore,
-              answers: user1.answers,
-            });
-            user1.totalScore = 0;
-            user1.answers = [];
-          }
-          console.log(payload);
-          console.log(payload.Attemps[0].answers);
+          // console.log("reset data");
+          // for (let user1 of users) {
+          //   payload.Attemps.push({
+          //     user: user1.username,
+          //     score: user1.totalScore,
+          //     answers: user1.answers,
+          //   });
+          //   user1.totalScore = 0;
+          //   user1.answers = [];
+          // }
+          // console.log(payload);
+          // console.log(payload.Attemps[0].answers);
           messagePublisher.publishMessage(payload);
         });
 

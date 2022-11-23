@@ -2,6 +2,12 @@ const Exam = require("../models/Exam");
 const Question = require("../models/Question");
 
 class ExamChallengeRepository {
+
+  async getExamById(examId)
+  {
+    return await Exam.findOne({externalId: parseInt(examId)})
+  }
+
   async checkCorrectOption(userAnswer) {
     const question = await Question.findOne({
       externalId: userAnswer.questionId,
