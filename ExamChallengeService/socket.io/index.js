@@ -2,7 +2,7 @@ const repo = require("../repositories/ExamChallengeRepository");
 const socketio = require("socket.io");
 const serverName = "ExamServer";
 const messagePublisher = require("../AsyncDataService/MessageBusClient");
-
+const { calStreakBonusPoint } = require("../helpers/ExamHelper");
 const formatMessage = require("../utils/message");
 const {
   userJoin,
@@ -37,11 +37,6 @@ const SendEventType = {
   CORRECT_ANSWER_BY_SOE: "option-is-correct-by-soe",
   WRON_ANSWER: "option-is-wrong",
   EXAM_RESULT: "exam-result",
-};
-
-const sendQuestionStartTime = function (io) {
-  let startTime = Date.now();
-  io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, { startTime });
 };
 
 class SocketIO {
@@ -91,8 +86,12 @@ class SocketIO {
           );
 
         socket.on(RecieveEventType.START_EXAM, () => {
-          let startTime = Date.now()
-          io.to(user.room).emit(SendEventType.START_EXAM_SUCCESS, {startTime});
+          let startTime = Date.now();
+          user.startTime = startTime;
+
+          io.to(user.room).emit(SendEventType.START_EXAM_SUCCESS, {
+            startTime,
+          });
         });
 
         socket.on(RecieveEventType.START_QUESTION, () => {
@@ -108,31 +107,55 @@ class SocketIO {
           user.answers.push({
             questionId: message.questionId,
             optionId: parseInt(message.optionId),
+            totalTime: message.totalTime,
           });
 
-          console.log(user)
+          console.log(user);
 
           const validateResult = questions.checkAnswer(
             message.questionId,
             message.optionId
           );
+
           console.log(validateResult);
           if (validateResult.isCorrect) {
             const user = getCurrentUser(socket.id);
-            user.totalScore += validateResult.score;
+            user.streak++;
+            user.maxCorrectStreak =
+              user.maxCorrectStreak < user.streak
+                ? user.streak
+                : user.maxCorrectStreak;
+
+            const streakBonusPoint = calStreakBonusPoint(user.streak);
+            user.totalBonusScore += streakBonusPoint;
+            user.totalScore += validateResult.score + streakBonusPoint;
+
             let startTime = Date.now();
             io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, {
               startTime,
             });
+
             socket.emit(SendEventType.CORRECT_ANSWER, {
               correctAnswer: message.optionId,
               totalScore: user.totalScore,
               score: validateResult.score,
+              bonusScore: streakBonusPoint,
             });
+
             socket.to(user.room).emit(SendEventType.CORRECT_ANSWER_BY_SOE, {
               correctAnswer: message.optionId,
             });
+
+            //reset correct streak of all other users
+            const users = getRoomUsers(socket.id);
+            users
+              .filter((user) => user.id != socket.id)
+              .forEach((user) => {
+                user.streak = 0;
+              });
           } else {
+            user.streak = 0;
+
             socket.emit(SendEventType.WRON_ANSWER, {
               wrongAnswer: message.optionId,
               totalScore: user.totalScore,
@@ -143,8 +166,8 @@ class SocketIO {
 
         socket.on(RecieveEventType.SUBMIT_TEST, async function () {
           const user = getCurrentUser(socket.id);
-          console.log("user :", user)
-          let examId = user.room.split('_').at(-1);
+          console.log("user :", user);
+          let examId = user.room.split("_").at(-1);
           let exam = await repo.getExamById(examId);
           let payload = {
             ExternalExamId: exam.externalId,
@@ -152,23 +175,30 @@ class SocketIO {
             Event: EventType.ExamDone,
           };
           const users = getRoomUsers(getCurrentUser(socket.id).room);
+
+          console.log("reset data");
+          for (let user1 of users) {
+            payload.Attemps.push({
+              maxCorrectStreak: user1.maxCorrectStreak,
+              totalBonusScore: user1.totalBonusScore,
+              user: user1.username,
+              totalScore: user1.totalScore,
+              answers: user1.answers,
+              startTime: user1.startTime,
+              finishTime: Date.now(),
+            });
+            // user1.totalScore = 0;
+            // user1.answers = [];
+          }
+          console.log(payload);
+          console.log(payload.Attemps[0].answers);
           io.to(user.room).emit(SendEventType.EXAM_RESULT, {
             room: user.room,
             users: users,
+            payload,
+            finishTime: Date.now(),
           });
-          // console.log("reset data");
-          // for (let user1 of users) {
-          //   payload.Attemps.push({
-          //     user: user1.username,
-          //     score: user1.totalScore,
-          //     answers: user1.answers,
-          //   });
-          //   user1.totalScore = 0;
-          //   user1.answers = [];
-          // }
-          // console.log(payload);
-          // console.log(payload.Attemps[0].answers);
-          messagePublisher.publishMessage(payload);
+          // messagePublisher.publishMessage(payload);
         });
 
         socket.on(RecieveEventType.USER_SEND_MESSAGE, function (message) {
