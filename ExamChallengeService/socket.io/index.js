@@ -127,10 +127,7 @@ class SocketIO {
           if (validateResult.isCorrect) {
             const user = getCurrentUser(socket.id);
             user.streak++;
-            user.maxCorrectStreak =
-              user.maxCorrectStreak < user.streak
-                ? user.streak
-                : user.maxCorrectStreak;
+            user.maxCorrectStreak = Math.max(user.streak, user.maxCorrectStreak);
 
             const streakBonusPoint = calStreakBonusPoint(user.streak);
             user.totalBonusScore += streakBonusPoint;
@@ -149,18 +146,23 @@ class SocketIO {
               correctStreak: user.streak,
             });
 
+            const users = getRoomUsers(getCurrentUser(socket.id).room);
+            console.log("Room member: " + users.length)
+            users
+              .forEach((_user) => {
+                console.log("Reset streak");
+                if(_user.id != user.id){
+                console.log(_user);
+                console.log(user);
+                  _user.streak = 0;
+                }
+              });
+
             socket.to(user.room).emit(SendEventType.CORRECT_ANSWER_BY_SOE, {
-              correctAnswer: message.optionId,
-              correctStreak: user.streak,
+              correctAnswer: message.optionId
             });
 
             //reset correct streak of all other users
-            const users = getRoomUsers(socket.id);
-            users
-              .filter((user) => user.id != socket.id)
-              .forEach((user) => {
-                user.streak = 0;
-              });
           } else {
             user.streak = 0;
 
