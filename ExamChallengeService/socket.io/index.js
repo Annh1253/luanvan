@@ -16,6 +16,7 @@ const EventType = require("../EventProcessing/EventType");
 const questions = new Question();
 
 const RecieveEventType = {
+  QUESTION_TIMEOUT: "question-timeout",
   START_QUESTION: "start-question",
   START_EXAM: "start-exam",
   CREATE_ROOM: "create-room",
@@ -85,6 +86,11 @@ class SocketIO {
             formatMessage(serverName, `${user.username} has joined the channel`)
           );
 
+        socket.on(RecieveEventType.QUESTION_TIMEOUT, () => {
+          const user = getCurrentUser(socket.id);
+          user.streak = 0;
+        });
+
         socket.on(RecieveEventType.START_EXAM, () => {
           let startTime = Date.now();
           user.startTime = startTime;
@@ -130,8 +136,6 @@ class SocketIO {
             user.totalBonusScore += streakBonusPoint;
             user.totalScore += validateResult.score + streakBonusPoint;
 
-            
-
             let startTime = Date.now();
             io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, {
               startTime,
@@ -142,12 +146,12 @@ class SocketIO {
               totalScore: user.totalScore,
               score: validateResult.score,
               bonusScore: streakBonusPoint,
-              correctStreak: user.streak
+              correctStreak: user.streak,
             });
 
             socket.to(user.room).emit(SendEventType.CORRECT_ANSWER_BY_SOE, {
               correctAnswer: message.optionId,
-              correctStreak: user.streak
+              correctStreak: user.streak,
             });
 
             //reset correct streak of all other users
@@ -157,7 +161,6 @@ class SocketIO {
               .forEach((user) => {
                 user.streak = 0;
               });
-              
           } else {
             user.streak = 0;
 
@@ -165,7 +168,7 @@ class SocketIO {
               wrongAnswer: message.optionId,
               totalScore: user.totalScore,
               score: validateResult.score,
-              correctStreak: user.streak
+              correctStreak: user.streak,
             });
           }
         });
