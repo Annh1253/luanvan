@@ -107,7 +107,7 @@ class SocketIO {
           user.answers.push({
             questionId: message.questionId,
             optionId: parseInt(message.optionId),
-            totalTime: message.totalTime,
+            totalTime: parseFloat(message.totalTime),
           });
 
           console.log(user);
@@ -130,6 +130,8 @@ class SocketIO {
             user.totalBonusScore += streakBonusPoint;
             user.totalScore += validateResult.score + streakBonusPoint;
 
+            
+
             let startTime = Date.now();
             io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, {
               startTime,
@@ -140,10 +142,12 @@ class SocketIO {
               totalScore: user.totalScore,
               score: validateResult.score,
               bonusScore: streakBonusPoint,
+              correctStreak: user.streak
             });
 
             socket.to(user.room).emit(SendEventType.CORRECT_ANSWER_BY_SOE, {
               correctAnswer: message.optionId,
+              correctStreak: user.streak
             });
 
             //reset correct streak of all other users
@@ -153,6 +157,7 @@ class SocketIO {
               .forEach((user) => {
                 user.streak = 0;
               });
+              
           } else {
             user.streak = 0;
 
@@ -160,6 +165,7 @@ class SocketIO {
               wrongAnswer: message.optionId,
               totalScore: user.totalScore,
               score: validateResult.score,
+              correctStreak: user.streak
             });
           }
         });
