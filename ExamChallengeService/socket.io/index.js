@@ -91,7 +91,7 @@ class SocketIO {
         socket.on(RecieveEventType.QUESTION_TIMEOUT, (questionId) => {
           console.log("Time out: " + questionId);
           answersSet.add(questionId);
-          console.log("Answer set: ", answersSet)
+          console.log("Answer set: ", answersSet);
 
           const user = getCurrentUser(socket.id);
           user.streak = 0;
@@ -101,7 +101,7 @@ class SocketIO {
 
         socket.on(RecieveEventType.START_EXAM, () => {
           let startTime = Date.now();
-          user.startTime = startTime;
+          user.startTime = new Date(startTime);
 
           io.to(user.room).emit(SendEventType.START_EXAM_SUCCESS, {
             startTime,
@@ -118,7 +118,7 @@ class SocketIO {
         socket.on(RecieveEventType.USER_CHOOSE_OPTION, (message) => {
           console.log("User choose option: " + message);
           answersSet.add(message.questionId);
-          console.log("Answer set: ", answersSet)
+          console.log("Answer set: ", answersSet);
           const user = getCurrentUser(socket.id);
           user.answers.push({
             questionId: message.questionId,
@@ -208,14 +208,15 @@ class SocketIO {
 
           console.log("reset data");
           for (let user1 of users) {
+            user1.finishTime = new Date(Date.now());
             payload.Attemps.push({
               maxCorrectStreak: user1.maxCorrectStreak,
               totalBonusScore: user1.totalBonusScore,
               user: user1.username,
               totalScore: user1.totalScore,
               answers: user1.answers,
-              startTime: user1.startTime,
-              finishTime: Date.now(),
+              startTime: new Date(user1.startTime),
+              finishTime: new Date(Date.now()),
             });
             // user1.totalScore = 0;
             // user1.answers = [];
@@ -228,7 +229,7 @@ class SocketIO {
             payload,
             finishTime: Date.now(),
           });
-          // messagePublisher.publishMessage(payload);
+          messagePublisher.publishMessage(payload);
         });
 
         socket.on(RecieveEventType.USER_SEND_MESSAGE, function (message) {
