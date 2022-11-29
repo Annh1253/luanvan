@@ -94,6 +94,11 @@ class SocketIO {
           console.log("Answer set: ", answersSet);
 
           const user = getCurrentUser(socket.id);
+          user.answers.push({
+            questionId: questionId,
+            optionId: null,
+            totalTime: null,
+          });
           user.streak = 0;
           if (answersSet.size > user.answerResults.length)
             user.answerResults.push(false);
