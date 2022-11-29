@@ -94,15 +94,18 @@ class SocketIO {
           console.log("Answer set: ", answersSet);
 
           const user = getCurrentUser(socket.id);
-          user.answers.push({
-            questionId: questionId,
-            optionId: null,
-            totalTime: null,
-            bonus: 0,
-          });
+
           user.streak = 0;
-          if (answersSet.size > user.answerResults.length)
+          if (answersSet.size > user.answerResults.length) {
+            user.answers.push({
+              questionId: questionId,
+              optionId: null,
+              totalTime: null,
+              bonus: 0,
+              score: 0,
+            });
             user.answerResults.push(false);
+          }
         });
 
         socket.on(RecieveEventType.START_EXAM, () => {
@@ -155,6 +158,7 @@ class SocketIO {
               optionId: parseInt(message.optionId),
               totalTime: parseFloat(message.totalTime),
               bonus: streakBonusPoint,
+              score: validateResult.score,
             });
 
             let startTime = Date.now();
@@ -180,6 +184,7 @@ class SocketIO {
                   optionId: null,
                   totalTime: null,
                   bonus: 0,
+                  score: 0,
                 });
                 if (answersSet.size > _user.answerResults.length)
                   _user.answerResults.push(false);
@@ -194,8 +199,16 @@ class SocketIO {
             //reset correct streak of all other users
           } else {
             user.streak = 0;
-            if (answersSet.size > user.answerResults.length)
+            if (answersSet.size > user.answerResults.length) {
+              user.answers.push({
+                questionId: message.questionId,
+                optionId: parseInt(message.optionId),
+                totalTime: parseFloat(message.totalTime),
+                bonus: 0,
+                score: 0,
+              });
               user.answerResults.push(false);
+            }
 
             socket.emit(SendEventType.WRON_ANSWER, {
               wrongAnswer: message.optionId,
@@ -227,23 +240,22 @@ class SocketIO {
           });
 
           // for (let user1 of users) {
-            user.finishTime = new Date(Date.now());
-            user.answers.forEach((answer) => {
-              answer.optionId = answer.optionId == null ? 0 : answer.optionId;
-              answer.totalTime =
-                answer.totalTime == null ? 0 : answer.totalTime;
-            });
-            payload.Attemps.push({
-              maxCorrectStreak: user.maxCorrectStreak,
-              totalBonusScore: user.totalBonusScore,
-              user: user.username,
-              totalScore: user.totalScore,
-              answers: user.answers,
-              startTime: new Date(user.startTime),
-              finishTime: new Date(Date.now()),
-            });
-            // user1.totalScore = 0;
-            // user1.answers = [];
+          user.finishTime = new Date(Date.now());
+          user.answers.forEach((answer) => {
+            answer.optionId = answer.optionId == null ? 0 : answer.optionId;
+            answer.totalTime = answer.totalTime == null ? 0 : answer.totalTime;
+          });
+          payload.Attemps.push({
+            maxCorrectStreak: user.maxCorrectStreak,
+            totalBonusScore: user.totalBonusScore,
+            user: user.username,
+            totalScore: user.totalScore,
+            answers: user.answers,
+            startTime: new Date(user.startTime),
+            finishTime: new Date(Date.now()),
+          });
+          // user1.totalScore = 0;
+          // user1.answers = [];
           // }
           console.log(user.answers);
           console.log(payload.Attemps[0].answers);
