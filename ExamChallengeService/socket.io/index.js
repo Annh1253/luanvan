@@ -175,8 +175,12 @@ class SocketIO {
             users.forEach((_user) => {
               console.log("Reset streak");
               if (_user.id != user.id) {
-                console.log(_user);
-                console.log(user);
+                _user.answers.push({
+                  questionId: message.questionId,
+                  optionId: null,
+                  totalTime: null,
+                  bonus: 0,
+                });
                 if (answersSet.size > _user.answerResults.length)
                   _user.answerResults.push(false);
                 _user.streak = 0;
@@ -222,26 +226,26 @@ class SocketIO {
             finishTime: Date.now(),
           });
 
-          for (let user1 of users) {
-            user1.finishTime = new Date(Date.now());
-            user1.answers.forEach((answer) => {
+          // for (let user1 of users) {
+            user.finishTime = new Date(Date.now());
+            user.answers.forEach((answer) => {
               answer.optionId = answer.optionId == null ? 0 : answer.optionId;
               answer.totalTime =
                 answer.totalTime == null ? 0 : answer.totalTime;
             });
             payload.Attemps.push({
-              maxCorrectStreak: user1.maxCorrectStreak,
-              totalBonusScore: user1.totalBonusScore,
-              user: user1.username,
-              totalScore: user1.totalScore,
-              answers: user1.answers,
-              startTime: new Date(user1.startTime),
+              maxCorrectStreak: user.maxCorrectStreak,
+              totalBonusScore: user.totalBonusScore,
+              user: user.username,
+              totalScore: user.totalScore,
+              answers: user.answers,
+              startTime: new Date(user.startTime),
               finishTime: new Date(Date.now()),
             });
             // user1.totalScore = 0;
             // user1.answers = [];
-          }
-          console.log(payload);
+          // }
+          console.log(user.answers);
           console.log(payload.Attemps[0].answers);
           messagePublisher.publishMessage(payload);
         });
