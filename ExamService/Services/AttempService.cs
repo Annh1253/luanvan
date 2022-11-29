@@ -52,17 +52,18 @@ namespace ExamService.Services
 
                         Question question = _questionRepository.GetById(Answer.QuestionId);
                         Option option = _optionRepository.GetById(Answer.OptionId);
-                        if(option != null)
+                        Answer NewAnswer = new Answer()
                         {
-                            Answer NewAnswer = new Answer()
-                            {
-                                Question = question,
-                                Option = option,
-                                TotalTime = Answer.TotalTime,
-                                Bonus = Answer.Bonus
-                            };
-                            AnswerList.Add(NewAnswer);
+                            Question = question,
+                            Option = null,
+                            TotalTime = Answer.TotalTime,
+                            Bonus = Answer.Bonus
+                        };
+                        if (option != null)
+                        {
+                            NewAnswer.Option = option;
                         }
+                        AnswerList.Add(NewAnswer);
                     }
 
                     Attemp NewAttemp = new Attemp()

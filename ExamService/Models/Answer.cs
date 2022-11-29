@@ -30,9 +30,9 @@ namespace ExamService.Models
             set => _question = value;
         }
 
-        public Option _option = new Option();
+        public Option? _option = new Option();
 
-        public Option Option
+        public Option? Option
         {
             get => LazyLoader.Load(this, ref _option);
             set => _option = value;
