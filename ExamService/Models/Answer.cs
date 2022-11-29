@@ -11,7 +11,7 @@ namespace ExamService.Models
         public int Id { get; set; }
 
         public float TotalTime { get; set; } = 0;
-
+        public int Bonus { get; set; }
         protected ILazyLoader LazyLoader { get; set; }
 
         public Attemp _attemp = new Attemp();

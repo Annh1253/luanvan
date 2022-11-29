@@ -10,5 +10,6 @@ namespace ExamService.Dtos.Answer
         public int QuestionId { get; set;}
         public int OptionId { get; set;}
         public float TotalTime { get; set; }
+        public int Bonus { get; set; }
     }
 }

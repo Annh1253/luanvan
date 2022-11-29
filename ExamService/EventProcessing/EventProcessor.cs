@@ -112,7 +112,7 @@ namespace ExamService.EventProcessing
 
                     foreach (var attemp in examDoneDto.Attemps)
                     {
-
+                        
 
                         AttempRequestDto attempRequest = new AttempRequestDto()
                         {
@@ -127,11 +127,13 @@ namespace ExamService.EventProcessing
                         attempRequest.Answers = new List<AnswerRequestDto>();
                         foreach (var answer in attemp.answers)
                         {
+                            Console.WriteLine("Bonus score is : " + answer.bonus);
                             AnswerRequestDto answerRequestDto = new AnswerRequestDto()
                             {
-                                OptionId = answer.optionId,
+                                OptionId = answer.optionId != null ? answer.optionId : 0,
+                                Bonus = answer.bonus,
                                 QuestionId = answer.questionId,
-                                TotalTime = answer.totalTime
+                                TotalTime = answer.totalTime != null ? answer.totalTime : 0
                             };
                             attempRequest.Answers.Add(answerRequestDto);
                         }

@@ -98,6 +98,7 @@ class SocketIO {
             questionId: questionId,
             optionId: null,
             totalTime: null,
+            bonus: 0,
           });
           user.streak = 0;
           if (answersSet.size > user.answerResults.length)
@@ -125,11 +126,6 @@ class SocketIO {
           answersSet.add(message.questionId);
           console.log("Answer set: ", answersSet);
           const user = getCurrentUser(socket.id);
-          user.answers.push({
-            questionId: message.questionId,
-            optionId: parseInt(message.optionId),
-            totalTime: parseFloat(message.totalTime),
-          });
 
           console.log(user);
 
@@ -153,6 +149,13 @@ class SocketIO {
             const streakBonusPoint = calStreakBonusPoint(user.streak);
             user.totalBonusScore += streakBonusPoint;
             user.totalScore += validateResult.score + streakBonusPoint;
+
+            user.answers.push({
+              questionId: message.questionId,
+              optionId: parseInt(message.optionId),
+              totalTime: parseFloat(message.totalTime),
+              bonus: streakBonusPoint,
+            });
 
             let startTime = Date.now();
             io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, {
@@ -212,8 +215,20 @@ class SocketIO {
           const users = getRoomUsers(getCurrentUser(socket.id).room);
 
           console.log("reset data");
+          io.to(user.room).emit(SendEventType.EXAM_RESULT, {
+            room: user.room,
+            users: users,
+            payload,
+            finishTime: Date.now(),
+          });
+
           for (let user1 of users) {
             user1.finishTime = new Date(Date.now());
+            user1.answers.forEach((answer) => {
+              answer.optionId = answer.optionId == null ? 0 : answer.optionId;
+              answer.totalTime =
+                answer.totalTime == null ? 0 : answer.totalTime;
+            });
             payload.Attemps.push({
               maxCorrectStreak: user1.maxCorrectStreak,
               totalBonusScore: user1.totalBonusScore,
@@ -228,12 +243,6 @@ class SocketIO {
           }
           console.log(payload);
           console.log(payload.Attemps[0].answers);
-          io.to(user.room).emit(SendEventType.EXAM_RESULT, {
-            room: user.room,
-            users: users,
-            payload,
-            finishTime: Date.now(),
-          });
           messagePublisher.publishMessage(payload);
         });
 

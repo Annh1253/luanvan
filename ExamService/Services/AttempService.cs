@@ -38,7 +38,6 @@ namespace ExamService.Services
         {
             try
             {
-                Console.WriteLine("aduoiyheoiutoeqi");
                 List<Attemp> AttempList = new List<Attemp>();
                 foreach (var AttempDto in AttempRequestDto)
                 {
@@ -53,13 +52,17 @@ namespace ExamService.Services
 
                         Question question = _questionRepository.GetById(Answer.QuestionId);
                         Option option = _optionRepository.GetById(Answer.OptionId);
-                        Answer NewAnswer = new Answer()
+                        if(option != null)
                         {
-                            Question = question,
-                            Option = option,
-                            TotalTime = Answer.TotalTime
-                        };
-                        AnswerList.Add(NewAnswer);
+                            Answer NewAnswer = new Answer()
+                            {
+                                Question = question,
+                                Option = option,
+                                TotalTime = Answer.TotalTime,
+                                Bonus = Answer.Bonus
+                            };
+                            AnswerList.Add(NewAnswer);
+                        }
                     }
 
                     Attemp NewAttemp = new Attemp()
