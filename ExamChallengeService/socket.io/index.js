@@ -40,6 +40,8 @@ const SendEventType = {
   EXAM_RESULT: "exam-result",
 };
 
+let answersSet = new Set();
+
 class SocketIO {
   connect(server) {
     let io = socketio(server, {
@@ -86,9 +88,15 @@ class SocketIO {
             formatMessage(serverName, `${user.username} has joined the channel`)
           );
 
-        socket.on(RecieveEventType.QUESTION_TIMEOUT, () => {
+        socket.on(RecieveEventType.QUESTION_TIMEOUT, (questionId) => {
+          console.log("Time out: " + questionId);
+          answersSet.add(questionId);
+          console.log("Answer set: ", answersSet)
+
           const user = getCurrentUser(socket.id);
           user.streak = 0;
+          if (answersSet.size > user.answerResults.length)
+            user.answerResults.push(false);
         });
 
         socket.on(RecieveEventType.START_EXAM, () => {
@@ -108,7 +116,9 @@ class SocketIO {
         });
 
         socket.on(RecieveEventType.USER_CHOOSE_OPTION, (message) => {
-          console.log(message);
+          console.log("User choose option: " + message);
+          answersSet.add(message.questionId);
+          console.log("Answer set: ", answersSet)
           const user = getCurrentUser(socket.id);
           user.answers.push({
             questionId: message.questionId,
@@ -126,8 +136,14 @@ class SocketIO {
           console.log(validateResult);
           if (validateResult.isCorrect) {
             const user = getCurrentUser(socket.id);
+            if (answersSet.size > user.answerResults.length)
+              user.answerResults.push(true);
+
             user.streak++;
-            user.maxCorrectStreak = Math.max(user.streak, user.maxCorrectStreak);
+            user.maxCorrectStreak = Math.max(
+              user.streak,
+              user.maxCorrectStreak
+            );
 
             const streakBonusPoint = calStreakBonusPoint(user.streak);
             user.totalBonusScore += streakBonusPoint;
@@ -147,24 +163,27 @@ class SocketIO {
             });
 
             const users = getRoomUsers(getCurrentUser(socket.id).room);
-            console.log("Room member: " + users.length)
-            users
-              .forEach((_user) => {
-                console.log("Reset streak");
-                if(_user.id != user.id){
+            console.log("Room member: " + users.length);
+            users.forEach((_user) => {
+              console.log("Reset streak");
+              if (_user.id != user.id) {
                 console.log(_user);
                 console.log(user);
-                  _user.streak = 0;
-                }
-              });
+                if (answersSet.size > _user.answerResults.length)
+                  _user.answerResults.push(false);
+                _user.streak = 0;
+              }
+            });
 
             socket.to(user.room).emit(SendEventType.CORRECT_ANSWER_BY_SOE, {
-              correctAnswer: message.optionId
+              correctAnswer: message.optionId,
             });
 
             //reset correct streak of all other users
           } else {
             user.streak = 0;
+            if (answersSet.size > user.answerResults.length)
+              user.answerResults.push(false);
 
             socket.emit(SendEventType.WRON_ANSWER, {
               wrongAnswer: message.optionId,

@@ -11,6 +11,7 @@ function userJoin(id, username, room) {
     streak: 0,
     maxCorrectStreak: 0,
     answers: [],
+    answerResults: []
   };
 
   users.push(user);
