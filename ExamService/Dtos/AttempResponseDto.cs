@@ -9,8 +9,13 @@ namespace ExamService.Dtos
     public class AttempResponseDto
     {
         public int Id { get; set; }
-        public double TotalScore { get; set;}
+        public double TotalScore { get; set; }
+        public int TotalBonusScore { get; set; }
+        public DateTime StartTime { get; set; }
 
+        public DateTime FinishTime { get; set; }
+
+        public int MaxCorrectStreak { get; set; }
         public ExamResponseDto Exam { get; set; }
 
         public UserResponseDto User { get; set; }

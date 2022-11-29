@@ -56,7 +56,8 @@ namespace ExamService.Services
                         Answer NewAnswer = new Answer()
                         {
                             Question = question,
-                            Option = option
+                            Option = option,
+                            TotalTime = Answer.TotalTime
                         };
                         AnswerList.Add(NewAnswer);
                     }
@@ -64,8 +65,12 @@ namespace ExamService.Services
                     Attemp NewAttemp = new Attemp()
                     {
                         TotalScore = AttempDto.TotalScore,
+                        TotalBonusScore = AttempDto.TotalBonusScore,
                         Exam = exam,
                         User = user,
+                        StartTime = AttempDto.StartTime,
+                        FinishTime = AttempDto.FinishTime,
+                        MaxCorrectStreak = AttempDto.MaxCorrectStreak,
                         Answers = AnswerList
                     };
                     AttempList.Add(NewAttemp);
@@ -97,7 +102,7 @@ namespace ExamService.Services
 
         public ServiceResponse<List<AttempResponseDto>> GetAttemps(AttempRequestFilter AttempFilter)
         {
-            if(AttempFilter != null)
+            if (AttempFilter != null)
             {
                 return GetAttempsByCriteria(AttempFilter);
             }
@@ -146,7 +151,7 @@ namespace ExamService.Services
                 };
             }
 
-            
+
         }
 
         public ServiceResponse<AttempResponseDto> GetById(int id)

@@ -3,6 +3,7 @@ using System;
 using ExamService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExamService.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20221126124504_AddBonusExamInfo")]
+    partial class AddBonusExamInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,8 +41,8 @@ namespace ExamService.Migrations
                     b.Property<int>("QuestionId")
                         .HasColumnType("integer");
 
-                    b.Property<float>("TotalTime")
-                        .HasColumnType("real");
+                    b.Property<int>("TotalTime")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -72,9 +74,6 @@ namespace ExamService.Migrations
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("TotalBonusScore")
-                        .HasColumnType("integer");
 
                     b.Property<double>("TotalScore")
                         .HasColumnType("double precision");

@@ -10,7 +10,14 @@ namespace ExamService.Models
     {
         public int Id { get; set; }
 
-        public double TotalScore { get; set;}
+        public double TotalScore { get; set; }
+        public int TotalBonusScore { get; set; }
+
+        public DateTime StartTime { get; set; }
+
+        public DateTime FinishTime { get; set; }
+
+        public int MaxCorrectStreak { get; set; } = 0;
 
         public Exam _exam = new Exam();
 

@@ -25,7 +25,7 @@ namespace ExamService.EventProcessing
             Console.WriteLine("---> Determine Event");
             var eventType = JsonSerializer.Deserialize<GenericEventDto>(notificationMessage);
             Console.WriteLine("---> Event is: " + eventType.Event);
-            switch(eventType.Event)
+            switch (eventType.Event)
             {
                 case "NewCredentialRegisted":
                     Console.WriteLine("---> New Credential Published Event Detected");
@@ -41,20 +41,20 @@ namespace ExamService.EventProcessing
 
         public EventProcessor(IServiceScopeFactory scopeFactory, IMapper mapper)
         {
-           
+
             this._mapper = mapper;
             this._scopeFactory = scopeFactory;
             var scope = _scopeFactory.CreateScope();
-     
+
             this._examRepository = scope.ServiceProvider.GetRequiredService<IExamRepository>();
             this._questionRepository = scope.ServiceProvider.GetRequiredService<IQuestionRepository>();
             this._userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
-            
+
         }
         public void ProcessEvent(string message)
         {
             var eventType = DetermineEvent(message);
-            switch(eventType)
+            switch (eventType)
             {
                 case EventType.NewCredentialRegisted:
                     Console.WriteLine("Processing new credential create...");
@@ -73,33 +73,34 @@ namespace ExamService.EventProcessing
 
         private void AddUser(string message)
         {
-            using(var scope = _scopeFactory.CreateScope())
+            using (var scope = _scopeFactory.CreateScope())
             {
                 var repo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
                 var credentialPublishedDto = JsonSerializer.Deserialize<CredentialPublishedDto>(message);
                 Console.WriteLine($"Email: {credentialPublishedDto.Email}");
-               
+
                 try
                 {
                     var userDtoRequest = _mapper.Map<UserRequestDto>(credentialPublishedDto);
                     var userEntity = _mapper.Map<User>(userDtoRequest);
-                   
-                    bool SavedSucceeded = _userRepository.AddUser(userEntity); 
-                    if(!SavedSucceeded)
+
+                    bool SavedSucceeded = _userRepository.AddUser(userEntity);
+                    if (!SavedSucceeded)
                     {
                         throw new InvalidOperationException();
                     }
                     Console.WriteLine("Save new User Successfully");
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine($"---> Could not add User to DB: {ex.Message}");
                 }
             }
         }
 
-        private void proccessNewExamDone(string message){            
-            using(var scope = _scopeFactory.CreateScope())
+        private void proccessNewExamDone(string message)
+        {
+            using (var scope = _scopeFactory.CreateScope())
             {
                 try
                 {
@@ -109,34 +110,39 @@ namespace ExamService.EventProcessing
                     Console.WriteLine(examDoneDto.ToString());
                     List<AttempRequestDto> attempList = new List<AttempRequestDto>();
 
-                    foreach( var attemp in examDoneDto.Attemps )
+                    foreach (var attemp in examDoneDto.Attemps)
                     {
-                        
-                       
+
+
                         AttempRequestDto attempRequest = new AttempRequestDto()
                         {
-                            TotalScore = attemp.score,
+                            TotalScore = attemp.totalScore,
+                            TotalBonusScore = attemp.totalBonusScore,
                             Email = attemp.user,
-                            ExamId = examDoneDto.ExternalExamId
+                            ExamId = examDoneDto.ExternalExamId,
+                            StartTime = attemp.startTime,
+                            FinishTime = attemp.finishTime,
+                            MaxCorrectStreak = attemp.maxCorrectStreak
                         };
                         attempRequest.Answers = new List<AnswerRequestDto>();
-                        foreach(var answer in attemp.answers)
+                        foreach (var answer in attemp.answers)
                         {
                             AnswerRequestDto answerRequestDto = new AnswerRequestDto()
                             {
                                 OptionId = answer.optionId,
-                                QuestionId = answer.questionId
+                                QuestionId = answer.questionId,
+                                TotalTime = answer.totalTime
                             };
                             attempRequest.Answers.Add(answerRequestDto);
                         }
-                  
+
                         attempList.Add(attempRequest);
                     }
                     ServiceResponse<AttempResponseDto> response = service.AddAttemps(attempList);
                     Console.WriteLine(response.Message);
                     // var AttempRequestDto = _mapper.Map<AttempRequestDto>(examDoneDto);
                     // var userEntity = _mapper.Map<User>(userDtoRequest);
-                   
+
                     // bool SavedSucceeded = _userRepository.AddUser(userEntity); 
                     // if(!SavedSucceeded)
                     // {
@@ -144,7 +150,7 @@ namespace ExamService.EventProcessing
                     // }
                     // Console.WriteLine("Save new attemps Successfully");
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine($"---> Could not add Attemps to DB: {ex.Message}");
                 }
