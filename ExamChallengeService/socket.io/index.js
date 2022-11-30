@@ -15,6 +15,11 @@ const Question = require("../utils/question");
 const EventType = require("../EventProcessing/EventType");
 const questions = new Question();
 
+const RoomMode = {
+  NORMAL: "normal",
+  CHALLENGE: "challenge",
+};
+
 const RecieveEventType = {
   QUESTION_TIMEOUT: "question-timeout",
   START_QUESTION: "start-question",
@@ -96,7 +101,10 @@ class SocketIO {
           const user = getCurrentUser(socket.id);
 
           user.streak = 0;
-          if (answersSet.size > user.answerResults.length) {
+          if (
+            answersSet.size > user.answerResults.length ||
+            user.mode == RoomMode.NORMAL
+          ) {
             user.answers.push({
               questionId: questionId,
               optionId: null,
@@ -108,20 +116,34 @@ class SocketIO {
           }
         });
 
-        socket.on(RecieveEventType.START_EXAM, () => {
+        socket.on(RecieveEventType.START_EXAM, (mode) => {
+          console.log("Rooom mod: ", mode);
+
           let startTime = Date.now();
           user.startTime = new Date(startTime);
+          const users = getRoomUsers(user.room);
+          console.log("Number of user: ", users.length);
+          users.forEach((user) => {
+            if (user.mode == null) user.mode = mode;
+          });
 
           io.to(user.room).emit(SendEventType.START_EXAM_SUCCESS, {
             startTime,
+            mode,
           });
         });
 
         socket.on(RecieveEventType.START_QUESTION, () => {
           let startTime = Date.now();
-          io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, {
-            startTime,
-          });
+          if (user.mode == RoomMode.CHALLENGE) {
+            io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, {
+              startTime,
+            });
+          } else {
+            socket.emit(SendEventType.START_QUESTION_SUCCESS, {
+              startTime,
+            });
+          }
         });
 
         socket.on(RecieveEventType.USER_CHOOSE_OPTION, (message) => {
@@ -131,7 +153,6 @@ class SocketIO {
           const user = getCurrentUser(socket.id);
 
           console.log(user);
-
           const validateResult = questions.checkAnswer(
             message.questionId,
             message.optionId
@@ -162,9 +183,16 @@ class SocketIO {
             });
 
             let startTime = Date.now();
-            io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, {
-              startTime,
-            });
+
+            if (user.mode == RoomMode.NORMAL) {
+              socket.emit(SendEventType.START_QUESTION_SUCCESS, {
+                startTime,
+              });
+            } else {
+              io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, {
+                startTime,
+              });
+            }
 
             socket.emit(SendEventType.CORRECT_ANSWER, {
               correctAnswer: message.optionId,
@@ -174,32 +202,37 @@ class SocketIO {
               correctStreak: user.streak,
             });
 
-            const users = getRoomUsers(getCurrentUser(socket.id).room);
-            console.log("Room member: " + users.length);
-            users.forEach((_user) => {
-              console.log("Reset streak");
-              if (_user.id != user.id) {
-                _user.answers.push({
-                  questionId: message.questionId,
-                  optionId: null,
-                  totalTime: null,
-                  bonus: 0,
-                  score: 0,
-                });
-                if (answersSet.size > _user.answerResults.length)
-                  _user.answerResults.push(false);
-                _user.streak = 0;
-              }
-            });
+            if (user.mode == RoomMode.CHALLENGE) {
+              const users = getRoomUsers(getCurrentUser(socket.id).room);
+              console.log("Room member: " + users.length);
+              users.forEach((_user) => {
+                console.log("Reset streak");
+                if (_user.id != user.id) {
+                  _user.answers.push({
+                    questionId: message.questionId,
+                    optionId: null,
+                    totalTime: null,
+                    bonus: 0,
+                    score: 0,
+                  });
+                  if (answersSet.size > _user.answerResults.length)
+                    _user.answerResults.push(false);
+                  _user.streak = 0;
+                }
+              });
 
-            socket.to(user.room).emit(SendEventType.CORRECT_ANSWER_BY_SOE, {
-              correctAnswer: message.optionId,
-            });
+              socket.to(user.room).emit(SendEventType.CORRECT_ANSWER_BY_SOE, {
+                correctAnswer: message.optionId,
+              });
+            }
 
             //reset correct streak of all other users
           } else {
             user.streak = 0;
-            if (answersSet.size > user.answerResults.length) {
+            if (
+              answersSet.size > user.answerResults.length ||
+              user.mode == RoomMode.NORMAL
+            ) {
               user.answers.push({
                 questionId: message.questionId,
                 optionId: parseInt(message.optionId),
@@ -216,6 +249,12 @@ class SocketIO {
               score: validateResult.score,
               correctStreak: user.streak,
             });
+            if (user.mode == RoomMode.NORMAL) {
+              const startTime = Date.now();
+              socket.emit(SendEventType.START_QUESTION_SUCCESS, {
+                startTime,
+              });
+            }
           }
         });
 
@@ -258,7 +297,7 @@ class SocketIO {
           // user1.answers = [];
           // }
           console.log(user.answers);
-          console.log(payload.Attemps[0].answers);
+
           messagePublisher.publishMessage(payload);
         });
 
