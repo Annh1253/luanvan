@@ -43,9 +43,11 @@ const SendEventType = {
   CORRECT_ANSWER_BY_SOE: "option-is-correct-by-soe",
   WRON_ANSWER: "option-is-wrong",
   EXAM_RESULT: "exam-result",
+
 };
 
 let answersSet = new Set();
+let modeInRoom = "";
 
 class SocketIO {
   connect(server) {
@@ -58,8 +60,9 @@ class SocketIO {
 
     //
     io.on(RecieveEventType.USER_CONNECT, function (socket) {
-      socket.on(RecieveEventType.CREATE_ROOM, async ({ email, examId }) => {
+      socket.on(RecieveEventType.CREATE_ROOM, async ({ email, examId, mode }) => {
         console.log("Getting question");
+        modeInRoom = mode;
 
         const questionList = await repo.loadAllQuestionsOfExam(examId);
         questions.questions = questionList;
@@ -79,6 +82,7 @@ class SocketIO {
         io.to(user.room).emit(RecieveEventType.SERVER_UPDATE_USER, {
           room: user.room,
           users: getRoomUsers(user.room),
+          modeInRoom: modeInRoom,
         });
 
         socket.emit(
@@ -103,8 +107,9 @@ class SocketIO {
           user.streak = 0;
           if (
             answersSet.size > user.answerResults.length ||
-            user.mode == RoomMode.NORMAL
+            user.mode === RoomMode.NORMAL
           ) {
+            console.log("Mode : ", user.mode);
             user.answers.push({
               questionId: questionId,
               optionId: null,
@@ -135,7 +140,7 @@ class SocketIO {
 
         socket.on(RecieveEventType.START_QUESTION, () => {
           let startTime = Date.now();
-          if (user.mode == RoomMode.CHALLENGE) {
+          if (user.mode === RoomMode.CHALLENGE) {
             io.to(user.room).emit(SendEventType.START_QUESTION_SUCCESS, {
               startTime,
             });
@@ -231,7 +236,7 @@ class SocketIO {
             user.streak = 0;
             if (
               answersSet.size > user.answerResults.length ||
-              user.mode == RoomMode.NORMAL
+              user.mode === RoomMode.NORMAL
             ) {
               user.answers.push({
                 questionId: message.questionId,
@@ -249,7 +254,7 @@ class SocketIO {
               score: validateResult.score,
               correctStreak: user.streak,
             });
-            if (user.mode == RoomMode.NORMAL) {
+            if (user.mode === RoomMode.NORMAL) {
               const startTime = Date.now();
               socket.emit(SendEventType.START_QUESTION_SUCCESS, {
                 startTime,
@@ -288,6 +293,7 @@ class SocketIO {
             maxCorrectStreak: user.maxCorrectStreak,
             totalBonusScore: user.totalBonusScore,
             user: user.username,
+            mode: user.mode,
             totalScore: user.totalScore,
             answers: user.answers,
             startTime: new Date(user.startTime),
@@ -316,6 +322,7 @@ class SocketIO {
             io.to(user.room).emit(RecieveEventType.SERVER_UPDATE_USER, {
               room: user.room,
               users: getRoomUsers(user.room),
+              modeInRoom: modeInRoom,
             });
             io.to(user.room).emit(
               RecieveEventType.SERVER_SEND_MESSAGE,
