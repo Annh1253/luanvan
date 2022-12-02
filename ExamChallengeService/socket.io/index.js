@@ -87,7 +87,7 @@ class SocketIO {
 
       socket.on(RecieveEventType.USER_JOIN_ROOM, async ({ email, roomId }) => {
         if (!RoomList.has(roomId)) {
-          console.log("Room Not Found");
+          console.log("EMIT: Room_Not_Found event with RoomId: ", roomId);
           socket.emit(SendEventType.ROOM_NOT_FOUND);
           return;
         }
@@ -97,7 +97,8 @@ class SocketIO {
         const user = userJoin(socket.id, email, roomId);
         console.log(email, roomId);
         socket.join(user.room);
-        socket.emit(SendEventType.JOIN_ROOM_SUCCESS);
+        socket.emit(SendEventType.JOIN_ROOM_SUCCESS, {roomId});
+        console.log("EMIT: Join_room_success event with RoomId: ", roomId);
 
         io.to(user.room).emit(RecieveEventType.SERVER_UPDATE_USER, {
           room: user.room,

@@ -12,7 +12,7 @@ function userJoin(id, username, room) {
     streak: 0,
     maxCorrectStreak: 0,
     answers: [],
-    answerResults: []
+    answerResults: [],
   };
 
   users.push(user);
@@ -25,7 +25,9 @@ function getCurrentUser(id) {
   return users.find((user) => user.id === id);
 }
 
-function getUserByName(username) {return users.find((user) => user.username === username);  }
+function getUserByName(username) {
+  return users.find((user) => user.username === username);
+}
 
 // User leaves chat
 function userLeave(id) {
@@ -38,9 +40,29 @@ function userLeave(id) {
 
 // Get room users
 function getRoomUsers(room) {
-  return users.filter((user) => user.room === room);
+  const usersInRoom = users.filter((user) => user.room === room);
+  const usersInRoomUnique = _removeSocketIdDuplicate(usersInRoom);
+  console.log("USER IN ROOM: ", usersInRoomUnique);
+  
+  return usersInRoomUnique;
 }
 
+function _removeSocketIdDuplicate(users) {
+  const uniqueIds = [];
+
+  const unique = users.filter((element) => {
+    const isDuplicate = uniqueIds.includes(element.id);
+
+    if (!isDuplicate) {
+      uniqueIds.push(element.id);
+      return true;
+    }
+
+    return false;
+  });
+
+  return unique;
+}
 
 module.exports = {
   getUserByName,
