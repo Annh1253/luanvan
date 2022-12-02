@@ -2,7 +2,7 @@ const repo = require("../repositories/ExamChallengeRepository");
 const socketio = require("socket.io");
 const serverName = "ExamServer";
 const messagePublisher = require("../AsyncDataService/MessageBusClient");
-const { calStreakBonusPoint } = require("../helpers/ExamHelper");
+const { calStreakBonusPoint, generateRoomId } = require("../helpers/ExamHelper");
 const formatMessage = require("../utils/message");
 const {
   userJoin,
@@ -20,6 +20,8 @@ const RoomMode = {
   CHALLENGE: "challenge",
 };
 
+const RoomList = new Set();
+
 const RecieveEventType = {
   QUESTION_TIMEOUT: "question-timeout",
   START_QUESTION: "start-question",
@@ -36,6 +38,8 @@ const RecieveEventType = {
 };
 
 const SendEventType = {
+  ROOM_NOT_FOUND: "room-not-found",
+  JOIN_ROOM_SUCCESS: "join-room-success",
   START_QUESTION_SUCCESS: "start-question-success",
   START_EXAM_SUCCESS: "start-exam-success",
   CREATE_ROOM_SUCCESS: "create-room-success",
@@ -63,21 +67,30 @@ class SocketIO {
       socket.on(RecieveEventType.CREATE_ROOM, async ({ email, examId, mode }) => {
         console.log("Getting question");
         modeInRoom = mode;
-
+        const generatedRoomId = generateRoomId(email, examId)
+        RoomList.add(generatedRoomId);
         const questionList = await repo.loadAllQuestionsOfExam(examId);
         questions.questions = questionList;
         console.log(questions.questions);
         socket.emit(SendEventType.CREATE_ROOM_SUCCESS, {
-          roomId: email + "_" + examId,
+          roomId: generatedRoomId,
         });
       });
 
       socket.on(RecieveEventType.USER_JOIN_ROOM, async ({ email, roomId }) => {
+        if(!RoomList.has(roomId))
+        {
+          console.log("Room Not Found")
+          socket.emit(SendEventType.ROOM_NOT_FOUND);
+          return;
+        }
+       
         console.log("Someone connect");
-
+        
         const user = userJoin(socket.id, email, roomId);
         console.log(email, roomId);
         socket.join(user.room);
+        socket.emit(SendEventType.JOIN_ROOM_SUCCESS);
 
         io.to(user.room).emit(RecieveEventType.SERVER_UPDATE_USER, {
           room: user.room,

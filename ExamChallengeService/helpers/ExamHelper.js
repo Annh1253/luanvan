@@ -6,6 +6,12 @@ function calStreakBonusPoint(streakCount) {
   return filterStreak * 5;
 }
 
+function generateRoomId(username, examId)
+{
+    return `${username}${Date.now().toString().slice(-5)}_${examId}`
+}
+
 module.exports = {
   calStreakBonusPoint,
+  generateRoomId
 };
