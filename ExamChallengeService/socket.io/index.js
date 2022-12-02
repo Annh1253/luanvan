@@ -2,13 +2,17 @@ const repo = require("../repositories/ExamChallengeRepository");
 const socketio = require("socket.io");
 const serverName = "ExamServer";
 const messagePublisher = require("../AsyncDataService/MessageBusClient");
-const { calStreakBonusPoint, generateRoomId } = require("../helpers/ExamHelper");
+const {
+  calStreakBonusPoint,
+  generateRoomId,
+} = require("../helpers/ExamHelper");
 const formatMessage = require("../utils/message");
 const {
   userJoin,
   getCurrentUser,
   userLeave,
   getRoomUsers,
+  getUserByName,
 } = require("../utils/user");
 
 const Question = require("../utils/question");
@@ -23,6 +27,7 @@ const RoomMode = {
 const RoomList = new Set();
 
 const RecieveEventType = {
+  INVITE_OTHER_USER: "invite-other-user",
   QUESTION_TIMEOUT: "question-timeout",
   START_QUESTION: "start-question",
   START_EXAM: "start-exam",
@@ -38,6 +43,7 @@ const RecieveEventType = {
 };
 
 const SendEventType = {
+  INVITE: "invite",
   ROOM_NOT_FOUND: "room-not-found",
   JOIN_ROOM_SUCCESS: "join-room-success",
   START_QUESTION_SUCCESS: "start-question-success",
@@ -47,7 +53,6 @@ const SendEventType = {
   CORRECT_ANSWER_BY_SOE: "option-is-correct-by-soe",
   WRON_ANSWER: "option-is-wrong",
   EXAM_RESULT: "exam-result",
-
 };
 
 let answersSet = new Set();
@@ -64,29 +69,31 @@ class SocketIO {
 
     //
     io.on(RecieveEventType.USER_CONNECT, function (socket) {
-      socket.on(RecieveEventType.CREATE_ROOM, async ({ email, examId, mode }) => {
-        console.log("Getting question");
-        modeInRoom = mode;
-        const generatedRoomId = generateRoomId(email, examId)
-        RoomList.add(generatedRoomId);
-        const questionList = await repo.loadAllQuestionsOfExam(examId);
-        questions.questions = questionList;
-        console.log(questions.questions);
-        socket.emit(SendEventType.CREATE_ROOM_SUCCESS, {
-          roomId: generatedRoomId,
-        });
-      });
+      socket.on(
+        RecieveEventType.CREATE_ROOM,
+        async ({ email, examId, mode }) => {
+          console.log("Getting question");
+          modeInRoom = mode;
+          const generatedRoomId = generateRoomId(email, examId);
+          RoomList.add(generatedRoomId);
+          const questionList = await repo.loadAllQuestionsOfExam(examId);
+          questions.questions = questionList;
+          console.log(questions.questions);
+          socket.emit(SendEventType.CREATE_ROOM_SUCCESS, {
+            roomId: generatedRoomId,
+          });
+        }
+      );
 
       socket.on(RecieveEventType.USER_JOIN_ROOM, async ({ email, roomId }) => {
-        if(!RoomList.has(roomId))
-        {
-          console.log("Room Not Found")
+        if (!RoomList.has(roomId)) {
+          console.log("Room Not Found");
           socket.emit(SendEventType.ROOM_NOT_FOUND);
           return;
         }
-       
+
         console.log("Someone connect");
-        
+
         const user = userJoin(socket.id, email, roomId);
         console.log(email, roomId);
         socket.join(user.room);
@@ -109,6 +116,13 @@ class SocketIO {
             RecieveEventType.SERVER_SEND_MESSAGE,
             formatMessage(serverName, `${user.username} has joined the channel`)
           );
+
+        socket.on(RecieveEventType.INVITE_OTHER_USER, ({ email }) => {
+          const userToSend = getUserByName(email);
+          socket
+            .to(userToSend.id)
+            .emit(SendEventType.INVITE, { roomId: user.room });
+        });
 
         socket.on(RecieveEventType.QUESTION_TIMEOUT, (questionId) => {
           console.log("Time out: " + questionId);
