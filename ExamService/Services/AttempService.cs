@@ -69,6 +69,7 @@ namespace ExamService.Services
                     Attemp NewAttemp = new Attemp()
                     {
                         TotalScore = AttempDto.TotalScore,
+                        Mode = AttempDto.Mode,
                         TotalBonusScore = AttempDto.TotalBonusScore,
                         Exam = exam,
                         User = user,

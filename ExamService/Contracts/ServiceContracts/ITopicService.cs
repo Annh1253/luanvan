@@ -13,7 +13,8 @@ namespace ExamService.Contracts.ServiceContracts
         ServiceResponse<TopicResponseDto> GetById(int id);
  
         ServiceResponse<TopicResponseDto> AddTopic(TopicRequestDto topicRequestDto);
-
+        ServiceResponse<TopicResponseDto> UpdateTopic(int oldTopicId , TopicRequestDto updateTopic);
+        ServiceResponse<TopicResponseDto> DeleteTopic(int topicId);
         bool Exist(int id);
     }
 }

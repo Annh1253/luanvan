@@ -26,5 +26,29 @@ namespace ExamService.Controllers
             ControllerResponse<List<TopicResponseDto>> controllerResponse = _mapper.Map<ControllerResponse<List<TopicResponseDto>>>(serviceResponse);
             return StatusCode((int)serviceResponse.StatusCode, controllerResponse);
         }
+
+        [HttpPost]
+        public IActionResult AddTopic(TopicRequestDto newTopic)
+        {
+             ServiceResponse<TopicResponseDto> serviceResponse = _topicService.AddTopic(newTopic);
+            ControllerResponse<TopicResponseDto> controllerResponse = _mapper.Map<ControllerResponse<TopicResponseDto>>(serviceResponse);
+            return StatusCode((int)serviceResponse.StatusCode, controllerResponse);
+        }
+
+        [HttpPatch]
+        public IActionResult UpdateTopic(int oldTopicId, TopicRequestDto updateTopic)
+        {
+             ServiceResponse<TopicResponseDto> serviceResponse = _topicService.UpdateTopic(oldTopicId, updateTopic);
+            ControllerResponse<TopicResponseDto> controllerResponse = _mapper.Map<ControllerResponse<TopicResponseDto>>(serviceResponse);
+            return StatusCode((int)serviceResponse.StatusCode, controllerResponse);
+        }
+
+        [HttpDelete]
+        public IActionResult UpdateTopic(int oldTopicId)
+        {
+             ServiceResponse<TopicResponseDto> serviceResponse = _topicService.DeleteTopic(oldTopicId);
+            ControllerResponse<TopicResponseDto> controllerResponse = _mapper.Map<ControllerResponse<TopicResponseDto>>(serviceResponse);
+            return StatusCode((int)serviceResponse.StatusCode, controllerResponse);
+        }
     }
 }

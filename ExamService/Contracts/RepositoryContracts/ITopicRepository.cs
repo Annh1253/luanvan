@@ -16,6 +16,8 @@ namespace ExamService.Contracts.RepositoryContracts
 
         bool AddTopic(Topic topic);
 
+        Topic UpdateTopic(int oldTopicId, TopicRequestDto topicRequestDto);
+        Topic DeleteTopic(Topic topicToDelete);
         Topic GetByName(string name);
       
         bool Exist(int id);

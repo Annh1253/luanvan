@@ -116,6 +116,7 @@ namespace ExamService.EventProcessing
 
                         AttempRequestDto attempRequest = new AttempRequestDto()
                         {
+                            Mode = attemp.mode,
                             TotalScore = attemp.totalScore,
                             TotalBonusScore = attemp.totalBonusScore,
                             Email = attemp.user,

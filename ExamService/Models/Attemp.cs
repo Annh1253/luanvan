@@ -13,6 +13,7 @@ namespace ExamService.Models
         public double TotalScore { get; set; }
         public int TotalBonusScore { get; set; }
 
+        public string Mode { get; set; } = "";
         public DateTime StartTime { get; set; }
 
         public DateTime FinishTime { get; set; }

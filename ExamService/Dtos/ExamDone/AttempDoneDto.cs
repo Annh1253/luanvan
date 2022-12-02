@@ -10,6 +10,7 @@ namespace ExamService.Dtos.ExamDone
     public class AttempDoneDto
     {
         public string user { get; set; }
+        public string mode { get; set; }
         public double totalScore { get; set; }
         public DateTime startTime { get; set; }
         public DateTime finishTime { get; set; }
