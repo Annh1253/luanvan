@@ -75,10 +75,9 @@ class ExamChallengeRepository {
 
   async loadAllQuestionsOfExam(examId) {
     const exams = await Exam.find({});
-    console.log(exams);
-    console.log("ExamID: " + examId);
+   
     const exam = await Exam.findOne({ externalId: examId });
-    console.log("Exam: " + exam);
+ 
 
     const questions = [];
 

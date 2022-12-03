@@ -13,6 +13,8 @@ const {
   userLeave,
   getRoomUsers,
   getUserByName,
+  updateUser,
+  removeSocketIdDuplicate
 } = require("../utils/user");
 
 const Question = require("../utils/question");
@@ -27,12 +29,15 @@ const RoomMode = {
 const RoomList = new Set();
 
 const RecieveEventType = {
+  NOT_AVAILABLE_USER: "not-available-user",
+  GET_AVAILABLE_USER: "get-available-user",
   INVITE_OTHER_USER: "invite-other-user",
   QUESTION_TIMEOUT: "question-timeout",
   START_QUESTION: "start-question",
   START_EXAM: "start-exam",
   CREATE_ROOM: "create-room",
   USER_CONNECT: "connection",
+  AVAILABLE_USER: "available-user",
   USER_CHOOSE_OPTION: "user-choose-option",
   USER_DISCONNECT: "disconnect",
   SERVER_SEND_MESSAGE: "server-send-message",
@@ -43,6 +48,7 @@ const RecieveEventType = {
 };
 
 const SendEventType = {
+  SERVER_SEND_AVAILABLE_USERS: "server-send-available-user",
   INVITE: "invite",
   ROOM_NOT_FOUND: "room-not-found",
   JOIN_ROOM_SUCCESS: "join-room-success",
@@ -57,6 +63,7 @@ const SendEventType = {
 
 let answersSet = new Set();
 let modeInRoom = "";
+let availableUsers = [];
 
 class SocketIO {
   connect(server) {
@@ -69,6 +76,31 @@ class SocketIO {
 
     //
     io.on(RecieveEventType.USER_CONNECT, function (socket) {
+      socket.on(RecieveEventType.AVAILABLE_USER, async ({ email }) => {
+        console.log(
+          `LISTEN AVAILABLE_USER EVENT with Email: ${email} and SocketId: ${socket.id}`
+        );
+        // userJoin(socket.id, email);
+        const availableUser = { id: socket.id, email: email };
+        availableUsers = availableUsers.filter(user => {
+          return user.email !== email
+        });
+        availableUsers.push(availableUser);
+        availableUsers = removeSocketIdDuplicate(availableUsers);
+      });
+
+      socket.on(RecieveEventType.GET_AVAILABLE_USER, ()=>{
+        socket.emit(SendEventType.SERVER_SEND_AVAILABLE_USERS, availableUsers);
+      })
+
+      socket.on(RecieveEventType.NOT_AVAILABLE_USER, ({email})=>{
+        console.log("clearing a user: ", email)
+        availableUsers = availableUsers.filter(user => {
+          return user.email !== email
+        })
+        console.log("available users: ", availableUsers)
+      })
+
       socket.on(
         RecieveEventType.CREATE_ROOM,
         async ({ email, examId, mode }) => {
@@ -78,7 +110,7 @@ class SocketIO {
           RoomList.add(generatedRoomId);
           const questionList = await repo.loadAllQuestionsOfExam(examId);
           questions.questions = questionList;
-          console.log(questions.questions);
+       
           socket.emit(SendEventType.CREATE_ROOM_SUCCESS, {
             roomId: generatedRoomId,
           });
@@ -86,6 +118,10 @@ class SocketIO {
       );
 
       socket.on(RecieveEventType.USER_JOIN_ROOM, async ({ email, roomId }) => {
+        console.log(
+          `LISTEN USER_JOIN_ROOM Event with email: ${email} and roomId: ${roomId}`
+        );
+
         if (!RoomList.has(roomId)) {
           console.log("EMIT: Room_Not_Found event with RoomId: ", roomId);
           socket.emit(SendEventType.ROOM_NOT_FOUND);
@@ -95,9 +131,12 @@ class SocketIO {
         console.log("Someone connect");
 
         const user = userJoin(socket.id, email, roomId);
+        // updateUser(email, roomId);
+        // const user = getUserByName(email);
+
         console.log(email, roomId);
         socket.join(user.room);
-        socket.emit(SendEventType.JOIN_ROOM_SUCCESS, {roomId});
+        socket.emit(SendEventType.JOIN_ROOM_SUCCESS, { roomId });
         console.log("EMIT: Join_room_success event with RoomId: ", roomId);
 
         io.to(user.room).emit(RecieveEventType.SERVER_UPDATE_USER, {
@@ -119,10 +158,12 @@ class SocketIO {
           );
 
         socket.on(RecieveEventType.INVITE_OTHER_USER, ({ email }) => {
-          const userToSend = getUserByName(email);
-          socket
-            .to(userToSend.id)
-            .emit(SendEventType.INVITE, { roomId: user.room });
+          // const userToSend = getUserByName(email);
+          const availableUser = availableUsers.find( user => user.email === email);
+          socket.to(availableUser.id).emit(SendEventType.INVITE, {
+            roomId: user.room,
+            mode: modeInRoom,
+          });
         });
 
         socket.on(RecieveEventType.QUESTION_TIMEOUT, (questionId) => {
@@ -178,6 +219,8 @@ class SocketIO {
             });
           }
         });
+
+        
 
         socket.on(RecieveEventType.USER_CHOOSE_OPTION, (message) => {
           console.log("User choose option: " + message);
@@ -346,6 +389,7 @@ class SocketIO {
 
         socket.on(RecieveEventType.USER_DISCONNECT, function () {
           const user = userLeave(socket.id);
+          console.log(`User disconnect`);
           if (user) {
             io.to(user.room).emit(RecieveEventType.SERVER_UPDATE_USER, {
               room: user.room,

@@ -1,4 +1,4 @@
-const users = [];
+let users = [];
 
 // Join user to chat
 function userJoin(id, username, room) {
@@ -6,7 +6,7 @@ function userJoin(id, username, room) {
     id,
     mode: null,
     username,
-    room,
+    room: room ?? "",
     totalBonusScore: 0,
     totalScore: 0,
     streak: 0,
@@ -41,16 +41,15 @@ function userLeave(id) {
 // Get room users
 function getRoomUsers(room) {
   const usersInRoom = users.filter((user) => user.room === room);
-  const usersInRoomUnique = _removeSocketIdDuplicate(usersInRoom);
-  console.log("USER IN ROOM: ", usersInRoomUnique);
-  
+  const usersInRoomUnique = removeSocketIdDuplicate(usersInRoom);
+
   return usersInRoomUnique;
 }
 
-function _removeSocketIdDuplicate(users) {
+function removeSocketIdDuplicate(users) {
   const uniqueIds = [];
 
-  const unique = users.filter((element) => {
+  const unique = users.reverse().filter((element) => {
     const isDuplicate = uniqueIds.includes(element.id);
 
     if (!isDuplicate) {
@@ -64,10 +63,21 @@ function _removeSocketIdDuplicate(users) {
   return unique;
 }
 
+function updateUser(email, roomId) {
+  users = users.map(user => {
+    if(user.username !== email) return user;
+    
+    user.room = roomId;
+    return user;
+  });
+}
+
 module.exports = {
   getUserByName,
   userJoin,
   getCurrentUser,
   userLeave,
   getRoomUsers,
+  updateUser,
+  removeSocketIdDuplicate,
 };
