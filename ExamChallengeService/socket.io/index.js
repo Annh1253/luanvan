@@ -158,6 +158,8 @@ class SocketIO {
           );
 
         socket.on(RecieveEventType.INVITE_OTHER_USER, ({ email }) => {
+          if(availableUsers.length === 0)
+            return;
           // const userToSend = getUserByName(email);
           const availableUser = availableUsers.find( user => user.email === email);
           socket.to(availableUser.id).emit(SendEventType.INVITE, {
@@ -337,7 +339,8 @@ class SocketIO {
         socket.on(RecieveEventType.SUBMIT_TEST, async function () {
           const user = getCurrentUser(socket.id);
           console.log("user :", user);
-          let examId = user.room.split("_").at(-1);
+          console.log("User's room: ", user.room);
+          let examId = user.room.toString().split("_").at(-1);
           let exam = await repo.getExamById(examId);
           let payload = {
             ExternalExamId: exam.externalId,

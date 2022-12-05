@@ -6,7 +6,7 @@ function userJoin(id, username, room) {
     id,
     mode: null,
     username,
-    room: room ?? "",
+    room: room ? room : "",
     totalBonusScore: 0,
     totalScore: 0,
     streak: 0,
